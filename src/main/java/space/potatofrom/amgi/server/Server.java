@@ -1,4 +1,4 @@
-package space.potatofrom.amgi;
+package space.potatofrom.amgi.server;
 
 import io.javalin.Javalin;
 import io.javalin.staticfiles.Location;
@@ -6,8 +6,8 @@ import io.javalin.staticfiles.Location;
 public class Server {
     public static void main(String[] args) {
         Javalin app = Javalin.create();
-        app.enableStaticFiles("target/amgi-1.0-SNAPSHOT", Location.EXTERNAL);
+        app.enableStaticFiles("target/generated/js", Location.EXTERNAL);
+        app.enableStaticFiles("src/main/webapp", Location.EXTERNAL);
         app.start(7000);
-        app.get("/", ctx -> ctx.result("Hello World"));
     }
 }

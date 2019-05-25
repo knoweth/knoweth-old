@@ -1,4 +1,4 @@
-package space.potatofrom.amgi.client;
+package com.github.knoweth.client;
 
 import org.teavm.flavour.templates.BindTemplate;
 

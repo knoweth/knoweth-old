@@ -1,4 +1,4 @@
-package space.potatofrom.amgi.server;
+package com.github.knoweth.server;
 
 import io.javalin.Javalin;
 import io.javalin.staticfiles.Location;

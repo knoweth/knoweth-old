@@ -1,4 +1,4 @@
-package space.potatofrom.amgi.server;
+package com.github.knoweth.server;
 
 import org.junit.Test;
 

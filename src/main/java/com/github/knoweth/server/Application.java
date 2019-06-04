@@ -2,6 +2,8 @@ package com.github.knoweth.server;
 
 import com.github.knoweth.common.data.Account;
 import com.github.knoweth.common.data.Document;
+import com.github.knoweth.server.auth.User;
+import com.github.knoweth.server.auth.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 
 @SpringBootApplication
 // Scan all JPA entities in the data package (that of Document)
-@EntityScan(basePackageClasses = Document.class)
+@EntityScan(basePackages = "com.github.knoweth.*")
 public class Application {
     private static final Logger log = LoggerFactory.getLogger(Application.class);
 
@@ -23,7 +25,7 @@ public class Application {
     }
 
     @Bean
-    public CommandLineRunner demo(DocumentRepository repository) {
+    public CommandLineRunner demo(DocumentRepository repository, UserRepository userRepository) {
         return (args) -> {
             repository.save(new Document(new Account("pog", "pog"), new ArrayList<>()));
 
@@ -33,7 +35,9 @@ public class Application {
             for (Document doc : repository.findAll()) {
                 log.info(doc.toString());
             }
-            log.info("");
+            for (User user : userRepository.findAll()) {
+                log.info(user.toString());
+            }
 
             // fetch an individual customer by ID
 //            repository.findById(1L)

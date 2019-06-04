@@ -21,6 +21,18 @@ public class Document {
         this.sections = sections;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Account getAuthor() {
+        return author;
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
     @Override
     public String toString() {
         return "Document{" +

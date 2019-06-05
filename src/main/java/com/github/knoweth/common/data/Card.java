@@ -3,6 +3,7 @@ package com.github.knoweth.common.data;
 import java.util.Objects;
 import java.util.UUID;
 
+// TODO should we add a Reviewable interface that Card implements?
 public class Card {
     private String front;
     private String back;

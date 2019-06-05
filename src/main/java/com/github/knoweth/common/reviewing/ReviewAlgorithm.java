@@ -2,8 +2,9 @@ package com.github.knoweth.common.reviewing;
 
 import com.github.knoweth.common.data.Card;
 
-import java.time.LocalDate;
+import java.time.Duration;
+import java.time.ZonedDateTime;
 
 public interface ReviewAlgorithm {
-    LocalDate getNextReview(Card card, ReviewQuality quality);
+    Duration getNextReview(Card card, ReviewQuality quality);
 }

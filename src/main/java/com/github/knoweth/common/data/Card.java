@@ -36,6 +36,11 @@ public class Card {
     }
 
     @Override
+    public String toString() {
+        return "Card[uuid=" + getUuid() + "]";
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(uuid);
     }

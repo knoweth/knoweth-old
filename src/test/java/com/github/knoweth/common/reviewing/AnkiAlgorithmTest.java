@@ -1,12 +1,12 @@
 package com.github.knoweth.common.reviewing;
 
 import com.github.knoweth.common.data.Card;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AnkiAlgorithmTest {
     @Test

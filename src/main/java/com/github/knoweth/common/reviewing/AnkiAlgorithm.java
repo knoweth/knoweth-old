@@ -8,13 +8,13 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AnkiReviewAlgorithm implements ReviewAlgorithm {
+public class AnkiAlgorithm implements ReviewAlgorithm {
     // TODO Document
     // TODO Anki can configure these - do we want to?
-    public static final Duration LEARNING_STEP_ONE = Duration.ofMinutes(1);
-    public static final Duration LEARNING_STEP_TWO = Duration.ofMinutes(10);
-    public static final Duration REPETITION_INTERVAL_ONE = Duration.ofDays(1);
-    public static final Duration REPETITION_INTERVAL_TWO = Duration.ofDays(4);
+    public static final Duration INTERVAL_LEARNING_ONE = Duration.ofMinutes(1);
+    public static final Duration INTERVAL_LEARNING_TWO = Duration.ofMinutes(10);
+    public static final Duration INTERVAL_REP_ONE = Duration.ofDays(1);
+    public static final Duration INTERVAL_REP_TWO = Duration.ofDays(4);
     private static final double DEFAULT_EASE_FACTOR = 2.5;
     private static final double MIN_EASE_FACTOR = 1.3;
     /**
@@ -22,7 +22,7 @@ public class AnkiReviewAlgorithm implements ReviewAlgorithm {
      */
     private static final double EASY_BONUS = 1.30;
 
-    private final static Logger logger = LoggerFactory.getLogger(AnkiReviewAlgorithm.class);
+    private final static Logger logger = LoggerFactory.getLogger(AnkiAlgorithm.class);
 
     private Map<Card, Double> easeFactors = new HashMap<>();
     private Map<Card, Integer> repetitions = new HashMap<>();
@@ -36,11 +36,16 @@ public class AnkiReviewAlgorithm implements ReviewAlgorithm {
     private void multiplyInterval(Card card, double multiplier) {
         intervals.put(card,
                 Duration.ofSeconds(Math.round(
-                        intervals.getOrDefault(card, REPETITION_INTERVAL_ONE).getSeconds() * multiplier)));
+                        intervals.getOrDefault(card, INTERVAL_REP_ONE).getSeconds() * multiplier)));
     }
 
     private void unlearn(Card card) {
-        learningSteps.put(card, LearningSteps.LEARNING_ONE);
+        LearningSteps current = learningSteps.getOrDefault(card, LearningSteps.NEW);
+        if (current == LearningSteps.GRADUATED) {
+            learningSteps.put(card, LearningSteps.LEARNING_TWO);
+        } else {
+            learningSteps.put(card, LearningSteps.LEARNING_ONE);
+        }
     }
 
     private void uplearn(Card card) {
@@ -53,7 +58,7 @@ public class AnkiReviewAlgorithm implements ReviewAlgorithm {
             learningSteps.put(card, current.nextStep());
 
             if (next == LearningSteps.GRADUATED) {
-                intervals.put(card, REPETITION_INTERVAL_ONE);
+                intervals.put(card, INTERVAL_REP_ONE);
             }
         }
     }
@@ -92,9 +97,9 @@ public class AnkiReviewAlgorithm implements ReviewAlgorithm {
                 // The current interval is multiplied by the current ease times
                 // the easy bonus and the ease is increased by 15 percentage points.
                 if (reps == 1) {
-                    intervals.put(card, REPETITION_INTERVAL_ONE);
+                    intervals.put(card, INTERVAL_REP_ONE);
                 } else if (reps == 2) {
-                    intervals.put(card, REPETITION_INTERVAL_TWO);
+                    intervals.put(card, INTERVAL_REP_TWO);
                 } else {
                     multiplyInterval(card, easeFactors.getOrDefault(card, DEFAULT_EASE_FACTOR) * EASY_BONUS);
                 }
@@ -105,9 +110,9 @@ public class AnkiReviewAlgorithm implements ReviewAlgorithm {
 
         switch (learningSteps.getOrDefault(card, LearningSteps.LEARNING_ONE)) {
             case LEARNING_ONE:
-                return LEARNING_STEP_ONE;
+                return INTERVAL_LEARNING_ONE;
             case LEARNING_TWO:
-                return LEARNING_STEP_TWO;
+                return INTERVAL_LEARNING_TWO;
             case GRADUATED:
                 logger.debug("Card graduated - returning interval {}", intervals.get(card));
                 return intervals.get(card);

@@ -8,6 +8,12 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * An implementation of a {@link ReviewAlgorithm} similar to Anki's SchedV2
+ * algorithm.
+ *
+ * @author Kevin Liu
+ */
 public class AnkiAlgorithm implements ReviewAlgorithm {
     // TODO Document
     // TODO Anki can configure these - do we want to?
@@ -30,7 +36,7 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
     private Map<Card, Duration> intervals = new HashMap<>();
 
     private void changeEaseFactor(Card card, double delta) {
-        easeFactors.put(card, easeFactors.getOrDefault(card, DEFAULT_EASE_FACTOR) + delta);
+        easeFactors.put(card, Math.max(easeFactors.getOrDefault(card, DEFAULT_EASE_FACTOR) + delta, MIN_EASE_FACTOR));
     }
 
     private void multiplyInterval(Card card, double multiplier) {
@@ -39,33 +45,38 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
                         intervals.getOrDefault(card, INTERVAL_REP_ONE).getSeconds() * multiplier)));
     }
 
-    private void unlearn(Card card) {
-        LearningSteps current = learningSteps.getOrDefault(card, LearningSteps.NEW);
-        if (current == LearningSteps.GRADUATED) {
-            learningSteps.put(card, LearningSteps.LEARNING_TWO);
-        } else {
-            learningSteps.put(card, LearningSteps.LEARNING_ONE);
+    private int addRepetition(Card card) {
+        int reps = repetitions.getOrDefault(card, 0) + 1;
+        repetitions.put(card, reps);
+        return reps;
+    }
+
+    private void reviewLearningCard(Card card, ReviewQuality quality) {
+        LearningSteps step = learningSteps.getOrDefault(card, LearningSteps.NEW);
+        switch (quality) {
+            case EASY:
+                step = LearningSteps.GRADUATED;
+                break;
+            case GOOD:
+                step = step.nextStep();
+                break;
+            case HARD:
+                // Hard repeats the current step.
+                break;
+            case AGAIN:
+                step = LearningSteps.LEARNING_ONE;
+                break;
+            default:
+                throw new IllegalStateException("Unknown review quality " + quality);
+        }
+        learningSteps.put(card, step);
+        if (step == LearningSteps.GRADUATED) {
+            // First-time graduated card review.
+            reviewGraduatedCard(card, quality);
         }
     }
 
-    private void uplearn(Card card) {
-        LearningSteps current = learningSteps.getOrDefault(card, LearningSteps.NEW);
-        if (current != LearningSteps.GRADUATED) {
-            LearningSteps next = current.nextStep();
-            logger.debug("Moving card " + card + " from " + current + " to " + next);
-            logger.debug("Ease: {}", easeFactors.get(card));
-            logger.debug("Interval: {}", intervals.get(card));
-            learningSteps.put(card, current.nextStep());
-
-            if (next == LearningSteps.GRADUATED) {
-                intervals.put(card, INTERVAL_REP_ONE);
-            }
-        }
-    }
-
-    public Duration getNextReview(Card card, ReviewQuality quality) {
-        // TODO: For easy, good, hard, the interval is also multiplied by the Interval Modifier
-
+    private void reviewGraduatedCard(Card card, ReviewQuality quality) {
         switch (quality) {
             case AGAIN:
                 // The card is placed into relearning mode, the ease is
@@ -76,7 +87,7 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
                 // relearning mode).
                 changeEaseFactor(card, -0.2);
                 multiplyInterval(card, 0);
-                unlearn(card);
+                learningSteps.put(card, LearningSteps.LEARNING_TWO);
                 break;
             case HARD:
                 // The card’s ease is decreased by 15 percentage points and the
@@ -85,30 +96,40 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
                 multiplyInterval(card, 1.2);
                 break;
             case EASY:
+                addRepetition(card);
                 changeEaseFactor(card, 0.15);
+                multiplyInterval(card, EASY_BONUS);
             case GOOD:
-                uplearn(card);
-                // TODO ugly code
-                int reps = repetitions.getOrDefault(card, 0);
-                if (learningSteps.get(card) == LearningSteps.GRADUATED) {
-                    reps++;
-                    repetitions.put(card, reps);
-                }
-                // The current interval is multiplied by the current ease times
-                // the easy bonus and the ease is increased by 15 percentage points.
+                int reps = addRepetition(card);
                 if (reps == 1) {
                     intervals.put(card, INTERVAL_REP_ONE);
                 } else if (reps == 2) {
                     intervals.put(card, INTERVAL_REP_TWO);
                 } else {
-                    multiplyInterval(card, easeFactors.getOrDefault(card, DEFAULT_EASE_FACTOR) * EASY_BONUS);
+                    multiplyInterval(card, easeFactors.getOrDefault(card, DEFAULT_EASE_FACTOR));
                 }
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown ReviewQuality type " + quality);
         }
+    }
 
-        switch (learningSteps.getOrDefault(card, LearningSteps.LEARNING_ONE)) {
+    public Duration getNextReview(Card card, ReviewQuality quality) {
+        // TODO: For easy, good, hard, the interval is also multiplied by the Interval Modifier
+        switch (learningSteps.getOrDefault(card, LearningSteps.NEW)) {
+            case NEW:
+            case LEARNING_ONE:
+            case LEARNING_TWO:
+                reviewLearningCard(card, quality);
+                break;
+            case GRADUATED:
+                reviewGraduatedCard(card, quality);
+                break;
+            default:
+                throw new UnsupportedOperationException("Should not reach here.");
+        }
+
+        switch (learningSteps.get(card)) {
             case LEARNING_ONE:
                 return INTERVAL_LEARNING_ONE;
             case LEARNING_TWO:

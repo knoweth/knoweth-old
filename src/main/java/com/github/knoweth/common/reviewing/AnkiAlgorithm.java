@@ -51,43 +51,36 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
         return reps;
     }
 
-    private void reviewLearningCard(Card card, ReviewQuality quality) {
+    private void answerLearningCard(Card card, ReviewQuality quality) {
         LearningSteps step = learningSteps.getOrDefault(card, LearningSteps.NEW);
         switch (quality) {
             case EASY:
+                // Immediate graduation
+                // Reschedule as a review card
                 step = LearningSteps.GRADUATED;
+                // TODO reschedule as rev
                 break;
             case GOOD:
+                // Move one step toward graduation
                 step = step.nextStep();
                 break;
             case HARD:
-                // Hard repeats the current step.
-                break;
+                // Hard is not actually implemented in Anki's schedv1 algorithm
+                // so for our purposes we will just consider it an AGAIN
             case AGAIN:
                 step = LearningSteps.LEARNING_ONE;
+                intervals.put(card, Duration.ofDays(1)); // reset interval to 1 day
                 break;
             default:
                 throw new IllegalStateException("Unknown review quality " + quality);
         }
         learningSteps.put(card, step);
-        if (step == LearningSteps.GRADUATED) {
-            // First-time graduated card review.
-            reviewGraduatedCard(card, quality);
-        }
     }
 
-    private void reviewGraduatedCard(Card card, ReviewQuality quality) {
+    private void answerReviewCard(Card card, ReviewQuality quality) {
         switch (quality) {
             case AGAIN:
-                // The card is placed into relearning mode, the ease is
-                // decreased by 20 percentage points (that is, 20 is subtracted
-                // from the ease value, which is in units of percentage points),
-                // and the current interval is multiplied by the value of new
-                // interval (this interval will be used when the card exits
-                // relearning mode).
-                changeEaseFactor(card, -0.2);
-                multiplyInterval(card, 0);
-                learningSteps.put(card, LearningSteps.LEARNING_TWO);
+                rescheduleLapse(card);
                 break;
             case HARD:
                 // The card’s ease is decreased by 15 percentage points and the
@@ -114,33 +107,57 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
         }
     }
 
+    /**
+     * Reschedules a learning card that has graduated for the first time.
+     * @param card the card that has just graduated
+     * @param graduatedEarly whether the card graduated "early", e.g. by
+     *                       clicking {@link ReviewQuality#EASY} on it.
+     */
+    private void rescheduleGraduatedCard(Card card, boolean graduatedEarly) {
+        intervals.put(card, graduatingInterval(graduatedEarly));
+        easeFactors.put(card, DEFAULT_EASE_FACTOR);
+    }
+
+    private Duration graduatingInterval(boolean graduatedEarly) {
+        // TODO adjust the review interval (adjRevIvl) to make it better in
+        // some way as Anki does
+        if (graduatedEarly) {
+            return INTERVAL_REP_TWO;
+        } else {
+            return INTERVAL_REP_ONE;
+        }
+    }
+
+    private void rescheduleLapse(Card card) {
+        // TODO leech, dynamic decks, etc.
+        // The card is placed into relearning mode, the ease is
+        // decreased by 20 percentage points (that is, 20 is subtracted
+        // from the ease value, which is in units of percentage points),
+        // and the current interval is multiplied by the value of new
+        // interval (this interval will be used when the card exits
+        // relearning mode).
+        // Set interval to max(minimum interval, card_interval * lapse_multiplier)
+        // Which is hardcoded at 1 day (which is the default minimum interval)
+        // since lapse_multiplier is also 0 by default
+        intervals.put(card, Duration.ofDays(1));
+        changeEaseFactor(card, -0.2);
+        learningSteps.put(card, LearningSteps.LEARNING_TWO);
+    }
+
     public Duration getNextReview(Card card, ReviewQuality quality) {
-        // TODO: For easy, good, hard, the interval is also multiplied by the Interval Modifier
-        switch (learningSteps.getOrDefault(card, LearningSteps.NEW)) {
-            case NEW:
-            case LEARNING_ONE:
-            case LEARNING_TWO:
-                reviewLearningCard(card, quality);
-                break;
-            case GRADUATED:
-                reviewGraduatedCard(card, quality);
-                break;
-            default:
-                throw new UnsupportedOperationException("Should not reach here.");
+        learningSteps.putIfAbsent(card, LearningSteps.NEW);
+        if (learningSteps.get(card) == LearningSteps.NEW) {
+            // Move to learning step one
+            learningSteps.put(card, LearningSteps.LEARNING_ONE);
         }
 
-        switch (learningSteps.get(card)) {
-            case LEARNING_ONE:
-                return INTERVAL_LEARNING_ONE;
-            case LEARNING_TWO:
-                return INTERVAL_LEARNING_TWO;
-            case GRADUATED:
-                logger.debug("Card graduated - returning interval {}", intervals.get(card));
-                return intervals.get(card);
-            case NEW:
-            default:
-                // Should not reach here.
-                throw new UnsupportedOperationException("Should not reach here.");
+        if (learningSteps.get(card) == LearningSteps.LEARNING_ONE ||
+                learningSteps.get(card) == LearningSteps.LEARNING_TWO) {
+            answerLearningCard(card, quality);
+        } else if (learningSteps.get(card) == LearningSteps.GRADUATED) {
+            answerReviewCard(card, quality);
+        } else {
+            throw new IllegalStateException("Invalid learning step");
         }
     }
 

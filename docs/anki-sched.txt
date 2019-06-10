@@ -1,0 +1,37 @@
+# queue types: 0=new/cram, 1=lrn, 2=rev, 3=day lrn, -1=suspended, -2=buried
+# day learning = cards in the learning queue that crossed from one day to the next without graduating to review
+By default, Anki brings up your daily cards in this order:
+
+1. learning cards that are due
+2. (optional) new cards if your preferences are set to have them first
+3. review cards
+4. "day learning" cards, which are cards in the learning queue that crossed from one day to the next without graduating to the review queue.
+5. (optional) new cards if your preferences put them last
+
+if was new card:
+	move to learning
+	initialize # of reps required to graduate
+if currently learning or day learning:
+	answer learning card:
+		EASY = immediate graduate, reschedule as review card
+		GOOD = one step toward graduation [something about lefts]
+		AGAIN =
+			reset left to normal
+			reschedule card (we aren't implementing dynamic decks so)
+			interval = max(1, conf['minInt'], card.interval * conf['mult'])
+		delay = delayForGrade(conf, card.left) # get the delay (1 min, 10 min, etc.)
+		set the due date of the card
+		if the card is due today:
+			put it back into the review queue
+		otherwise:
+			use the day learn queue
+otherwise, if currently a review card:
+	answer review card:
+		AGAIN = rescheduleLapse
+			# check leech, dynamic decks, etc.
+			delay as Delay #0
+			interval = max(conf['minInt'], card.interval * conf['mult'])
+		otherwise -> rescheduleRev
+			factor = # do the ease of 1.3, the hard,good,easy adjustment of the ease factor
+			set the interval accordingly
+record time taken

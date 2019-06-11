@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * An implementation of a {@link ReviewAlgorithm} similar to Anki's SchedV2
+ * An implementation of a {@link ReviewAlgorithm} similar to Anki's SchedV1
  * algorithm.
  *
  * @author Kevin Liu
@@ -35,6 +35,10 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
     private Map<Card, LearningSteps> learningSteps = new HashMap<>();
     private Map<Card, Duration> intervals = new HashMap<>();
 
+    private static Duration fractionalMultiplyDuration(Duration duration, double multiplier) {
+        return Duration.ofSeconds(Math.round(duration.getSeconds() * multiplier));
+    }
+
     private void changeEaseFactor(Card card, double delta) {
         easeFactors.put(card, Math.max(easeFactors.getOrDefault(card, DEFAULT_EASE_FACTOR) + delta, MIN_EASE_FACTOR));
     }
@@ -58,11 +62,14 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
                 // Immediate graduation
                 // Reschedule as a review card
                 step = LearningSteps.GRADUATED;
-                // TODO reschedule as rev
+                rescheduleGraduatedCard(card, true);
                 break;
             case GOOD:
                 // Move one step toward graduation
                 step = step.nextStep();
+                if (step == LearningSteps.GRADUATED) {
+                    rescheduleGraduatedCard(card, false);
+                }
                 break;
             case HARD:
                 // Hard is not actually implemented in Anki's schedv1 algorithm
@@ -77,48 +84,99 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
         learningSteps.put(card, step);
     }
 
-    private void answerReviewCard(Card card, ReviewQuality quality) {
+    /**
+     * Returns the next ideal review interval for the given graduated card, with a
+     * review of a given quality.
+     *
+     * @param card    the card reviewed (should have graduated)
+     * @param quality the quality of the review
+     * @return the interval until the next review
+     */
+    private Duration nextReviewInterval(Card card, ReviewQuality quality, int daysOverdue) {
+        double easeFactor = easeFactors.get(card);
+        Duration currentInterval = intervals.get(card);
+        // (interval + delay / 4) * 1.2
+        Duration hardInterval = constrainedIntervalAfter(currentInterval
+                .plus(Duration.ofDays(daysOverdue).dividedBy(4))
+                .multipliedBy(5).dividedBy(4), currentInterval);
+        // (interval + delay / 2 ) * easeFactor
+        Duration goodInterval = constrainedIntervalAfter(
+                fractionalMultiplyDuration(currentInterval
+                        .plus(Duration.ofDays(daysOverdue).dividedBy(2)), easeFactor),
+                hardInterval);
+        Duration easyInterval = constrainedIntervalAfter(
+                fractionalMultiplyDuration(currentInterval
+                        .plus(Duration.ofDays(daysOverdue)), easeFactor),
+                goodInterval);
         switch (quality) {
-            case AGAIN:
-                rescheduleLapse(card);
-                break;
-            case HARD:
-                // The card’s ease is decreased by 15 percentage points and the
-                // current interval is multiplied by 1.2.
-                changeEaseFactor(card, -0.15);
-                multiplyInterval(card, 1.2);
-                break;
             case EASY:
-                addRepetition(card);
-                changeEaseFactor(card, 0.15);
-                multiplyInterval(card, EASY_BONUS);
+                return easyInterval;
             case GOOD:
-                int reps = addRepetition(card);
-                if (reps == 1) {
-                    intervals.put(card, INTERVAL_REP_ONE);
-                } else if (reps == 2) {
-                    intervals.put(card, INTERVAL_REP_TWO);
-                } else {
-                    multiplyInterval(card, easeFactors.getOrDefault(card, DEFAULT_EASE_FACTOR));
-                }
-                break;
+                return goodInterval;
+            case HARD:
+                return hardInterval;
+            case AGAIN:
             default:
-                throw new UnsupportedOperationException("Unknown ReviewQuality type " + quality);
+                throw new IllegalArgumentException(
+                        "Cannot calculate next review interval for a card marked as AGAIN/unknown.");
         }
     }
 
     /**
+     * Returns an interval of max(newInterval, greaterThan + 1 day). That is,
+     * the interval must be at least one day longer than greaterThan.
+     * <p>
+     * This is done to constrain the interval so that, e.g. the GOOD interval
+     * isn't shorter than the HARD interval.
+     *
+     * @param newInterval the interval to use as a baseline value, given that
+     *                    the returned interval will be newInterval or one day
+     *                    longer than greaterThan (whichever is larger).
+     * @param greaterThan the returned interval will be at least one day longer
+     *                    than this interval
+     * @return max(newInterval, greaterThan + 1 day)
+     */
+    private Duration constrainedIntervalAfter(Duration newInterval, Duration greaterThan) {
+        Duration minimum = greaterThan.plusDays(1);
+        // Return the larger of the two
+        return minimum.compareTo(newInterval) > 0 ? minimum : newInterval;
+    }
+
+    private void answerReviewCard(Card card, ReviewQuality quality, int daysOverdue) {
+        // Adjust review factor
+        if (quality == ReviewQuality.AGAIN) {
+            rescheduleLapse(card);
+            return;
+        }
+        switch (quality) {
+            case HARD:
+                // The card’s ease is decreased by 15 percentage points and the
+                // current interval is multiplied by 1.2.
+                changeEaseFactor(card, -0.15);
+                break;
+            case EASY:
+                changeEaseFactor(card, 0.15);
+                break;
+            case GOOD:
+                break;
+        }
+
+        intervals.put(card, nextReviewInterval(card, quality, daysOverdue));
+    }
+
+    /**
      * Reschedules a learning card that has graduated for the first time.
-     * @param card the card that has just graduated
+     *
+     * @param card           the card that has just graduated
      * @param graduatedEarly whether the card graduated "early", e.g. by
      *                       clicking {@link ReviewQuality#EASY} on it.
      */
     private void rescheduleGraduatedCard(Card card, boolean graduatedEarly) {
-        intervals.put(card, graduatingInterval(graduatedEarly));
+        intervals.put(card, getGraduatingInterval(graduatedEarly));
         easeFactors.put(card, DEFAULT_EASE_FACTOR);
     }
 
-    private Duration graduatingInterval(boolean graduatedEarly) {
+    private Duration getGraduatingInterval(boolean graduatedEarly) {
         // TODO adjust the review interval (adjRevIvl) to make it better in
         // some way as Anki does
         if (graduatedEarly) {
@@ -144,7 +202,8 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
         learningSteps.put(card, LearningSteps.LEARNING_TWO);
     }
 
-    public Duration getNextReview(Card card, ReviewQuality quality) {
+    @Override
+    public Duration getNextReview(Card card, ReviewQuality quality, int daysOverdue) {
         learningSteps.putIfAbsent(card, LearningSteps.NEW);
         if (learningSteps.get(card) == LearningSteps.NEW) {
             // Move to learning step one
@@ -155,9 +214,21 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
                 learningSteps.get(card) == LearningSteps.LEARNING_TWO) {
             answerLearningCard(card, quality);
         } else if (learningSteps.get(card) == LearningSteps.GRADUATED) {
-            answerReviewCard(card, quality);
+            answerReviewCard(card, quality, daysOverdue);
         } else {
             throw new IllegalStateException("Invalid learning step");
+        }
+
+        switch (learningSteps.get(card)) {
+            case LEARNING_ONE:
+                return INTERVAL_LEARNING_ONE;
+            case LEARNING_TWO:
+                return INTERVAL_LEARNING_TWO;
+            case GRADUATED:
+                return intervals.get(card);
+            case NEW:
+            default:
+                throw new IllegalStateException("Invalid learning step");
         }
     }
 

@@ -35,3 +35,13 @@ otherwise, if currently a review card:
 			factor = # do the ease of 1.3, the hard,good,easy adjustment of the ease factor
 			set the interval accordingly
 record time taken
+
+Interval calculation:
+- Get delay
+- Get ease factor
+- All intervals multiplied by interval multiplier and must be at least 1 day later than a *prev* interval
+- HARD interval: (interval + delay / 4) * 1.2
+- GOOD interval: (interval + delay / 2) * easeFactor, at least 1 day later than HARD interval
+- EASY interval: (interval + delay) * easeFactor * (extra ease multiplier), at least one day later than GOOD interval
+- Use the proper interval
+- Cap it to (max interval) if necessary

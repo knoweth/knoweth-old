@@ -1,40 +1,59 @@
 package com.github.knoweth.common.reviewing;
 
 import com.github.knoweth.common.data.Card;
-import com.github.knoweth.common.data.Document;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Keeps track of when cards need to be reviewed.
+ *
+ * @author Kevin Liu
+ */
 public class ReviewTracker {
-    private Map<LocalDate, List<Card>> reviewTimes;
-    private Map<Card, MetaData> metadata;
+    // TODO optimize for < O(n) search for current reviews
+    private final Map<Card, Metadata> metadata = new HashMap<>();
     private final ReviewAlgorithm reviewAlgorithm;
 
     /**
      * Creates a new ReviewTracker based on a given document, with all cards unreviewed
      */
-    public ReviewTracker(Document document, ReviewAlgorithm reviewAlgorithm) {
+    public ReviewTracker(ReviewAlgorithm reviewAlgorithm) {
         this.reviewAlgorithm = reviewAlgorithm;
     }
 
     public void markReviewed(Card card, Duration duration, ReviewQuality quality) {
+        Duration reviewInterval = reviewAlgorithm.getNextReview(card, quality, 0); // TODO take into account overdue days
+
+        // Update metadata
         Session reviewSession = new Session(ZonedDateTime.now(), duration, quality);
-        if (metadata.get(card) == null) {
-            metadata.put(card, new MetaData());
-        }
+        metadata.putIfAbsent(card, new Metadata());
+        metadata.get(card).reviewDate = ZonedDateTime.now().plus(reviewInterval);
+        metadata.get(card).pastReviews.add(reviewSession);
     }
 
     public List<Card> getCurrentReviews() {
-        return null;
+        List<Card> cards = new ArrayList<>();
+        for (Map.Entry<Card, Metadata> x : metadata.entrySet()) {
+            if (x.getValue().reviewDate.toLocalDate().isEqual(LocalDate.now())) {
+                cards.add(x.getKey());
+            }
+        }
+        return cards;
     }
 
-    public class MetaData {
-        private LocalDate reviewDate;
-        private List<Session> pastReviews;
+    public ZonedDateTime getNextReviewDate(Card card) {
+        return metadata.get(card).reviewDate;
+    }
+
+    public class Metadata {
+        private final List<Session> pastReviews = new ArrayList<>();
+        private ZonedDateTime reviewDate;
     }
 
     public class Session {

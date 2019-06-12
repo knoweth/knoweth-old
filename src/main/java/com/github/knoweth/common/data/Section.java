@@ -14,7 +14,7 @@ public class Section {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Section> subsections;
 
-    protected Section() {}
+    public Section() {}
 
     public String getTitle() {
         return title;

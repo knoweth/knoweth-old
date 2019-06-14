@@ -1,10 +1,13 @@
 package com.github.knoweth.common.reviewing;
 
 import com.github.knoweth.common.data.Card;
+import manifold.ext.api.Jailbreak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +24,7 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
     public static final Duration INTERVAL_LEARNING_TWO = Duration.ofMinutes(10);
     public static final Duration INTERVAL_REP_ONE = Duration.ofDays(1);
     public static final Duration INTERVAL_REP_TWO = Duration.ofDays(4);
-    private static final double DEFAULT_EASE_FACTOR = 2.5;
+    public static final double DEFAULT_EASE_FACTOR = 2.5;
     private static final double MIN_EASE_FACTOR = 1.3;
     /**
      * 130%
@@ -176,6 +179,7 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
         easeFactors.put(card, DEFAULT_EASE_FACTOR);
     }
 
+    @Jailbreak
     private Duration getGraduatingInterval(boolean graduatedEarly) {
         // TODO adjust the review interval (adjRevIvl) to make it better in
         // some way as Anki does
@@ -225,12 +229,18 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
             case LEARNING_TWO:
                 return INTERVAL_LEARNING_TWO;
             case GRADUATED:
-                return intervals.get(card);
+                return intervals.get(card).truncatedTo(ChronoUnit.DAYS);
             case NEW:
             default:
                 throw new IllegalStateException("Invalid learning step");
         }
     }
+
+    public double getEaseFactor(Card card) {
+        return easeFactors.getOrDefault(card, DEFAULT_EASE_FACTOR);
+    }
+
+    // TODO randomization of interval as anki does in fuzzedIvl
 
     private enum LearningSteps {
         NEW, LEARNING_ONE, LEARNING_TWO, GRADUATED {

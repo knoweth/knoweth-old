@@ -16,7 +16,7 @@ class AnkiAlgorithmTest {
     }
 
     @Test
-    void newCardLearning() {
+    void continualGoodIntervalTests() {
         Card newCard = newCard();
         Duration nextReview = r.getNextReview(newCard, ReviewQuality.AGAIN, 0);
         assertEquals(AnkiAlgorithm.INTERVAL_LEARNING_ONE, nextReview);
@@ -25,11 +25,28 @@ class AnkiAlgorithmTest {
         nextReview = r.getNextReview(newCard, ReviewQuality.GOOD, 0);
         assertEquals(AnkiAlgorithm.INTERVAL_REP_ONE, nextReview);
         nextReview = r.getNextReview(newCard, ReviewQuality.GOOD, 0);
-        assertEquals(AnkiAlgorithm.INTERVAL_REP_TWO, nextReview);
+        assertEquals(Duration.ofDays(3), nextReview);
+        nextReview = r.getNextReview(newCard, ReviewQuality.GOOD, 0);
+        assertEquals(Duration.ofDays(7), nextReview);
+        // Ease factor should be unchanged after repeated Goods
+        assertEquals(AnkiAlgorithm.DEFAULT_EASE_FACTOR, r.getEaseFactor(newCard));
+        nextReview = r.getNextReview(newCard, ReviewQuality.GOOD, 0);
+        assertEquals(Duration.ofDays(22), nextReview);
     }
 
     @Test
-    void newCardFail() {
+    void learningCardsShouldNotChangeEaseFactor() {
+        Card newCard = newCard();
+        Duration nextReview = r.getNextReview(newCard, ReviewQuality.AGAIN, 0);
+        assertEquals(AnkiAlgorithm.INTERVAL_LEARNING_ONE, nextReview);
+        // Saying "again" in the learning period should not change the ease factor
+        assertEquals(AnkiAlgorithm.DEFAULT_EASE_FACTOR, r.getEaseFactor(newCard));
+        r.getNextReview(newCard, ReviewQuality.AGAIN, 0);
+        assertEquals(AnkiAlgorithm.DEFAULT_EASE_FACTOR, r.getEaseFactor(newCard));
+    }
+
+    @Test
+    void learnedCardLapseChecksz() {
         Card newCard = newCard();
         Duration nextReview = r.getNextReview(newCard, ReviewQuality.AGAIN, 0);
         assertEquals(AnkiAlgorithm.INTERVAL_LEARNING_ONE, nextReview);

@@ -1,13 +1,11 @@
 package com.github.knoweth.common.reviewing;
 
 import com.github.knoweth.common.data.Card;
-import manifold.ext.api.Jailbreak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -179,7 +177,6 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
         easeFactors.put(card, DEFAULT_EASE_FACTOR);
     }
 
-    @Jailbreak
     private Duration getGraduatingInterval(boolean graduatedEarly) {
         // TODO adjust the review interval (adjRevIvl) to make it better in
         // some way as Anki does

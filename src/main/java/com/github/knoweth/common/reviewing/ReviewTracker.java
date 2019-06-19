@@ -48,10 +48,22 @@ public class ReviewTracker {
     }
 
     public ZonedDateTime getNextReviewDate(Card card) {
+        if (!metadata.containsKey(card)) {
+            throw new IllegalArgumentException("Card " + card + " has not yet been tracked.");
+        }
         return metadata.get(card).reviewDate;
     }
 
-    public class Metadata {
+    public List<Session> getPastReviews(Card card) {
+        if (!metadata.containsKey(card)) {
+            return new ArrayList<>();
+        }
+
+        // Defensive copy
+        return new ArrayList<>(metadata.get(card).pastReviews);
+    }
+
+    private class Metadata {
         private final List<Session> pastReviews = new ArrayList<>();
         private ZonedDateTime reviewDate;
     }
@@ -65,6 +77,18 @@ public class ReviewTracker {
             this.reviewStartDateTime = reviewStartDateTime;
             this.duration = duration;
             this.quality = quality;
+        }
+
+        public ZonedDateTime getReviewStartDateTime() {
+            return reviewStartDateTime;
+        }
+
+        public Duration getDuration() {
+            return duration;
+        }
+
+        public ReviewQuality getQuality() {
+            return quality;
         }
     }
 }

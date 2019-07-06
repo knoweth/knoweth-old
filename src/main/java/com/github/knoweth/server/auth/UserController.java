@@ -1,5 +1,7 @@
 package com.github.knoweth.server.auth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.jaas.JaasAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +18,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping("/register")
     public String register(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
@@ -24,6 +27,7 @@ public class UserController {
             return "User already exists";
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            logger.info("Adding user: " + user.toString());
             userRepository.save(user);
             return "Success";
         }

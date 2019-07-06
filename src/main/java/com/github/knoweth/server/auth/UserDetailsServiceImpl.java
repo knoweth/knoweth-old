@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Retrieves user-related data, in this case from our Spring UserRepository.
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired

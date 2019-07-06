@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -25,24 +26,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated().and()
                 .formLogin().and()
                 .logout().permitAll();
-//            http
-//                    .csrf().disable()
-//                    .exceptionHandling()
-//                    .and()
-//                    .authorizeRequests()
-//                    .antMatchers("/api/foos").authenticated()
-//                    .antMatchers("/api/admin/**").hasRole("ADMIN")
-//                    .and()
-//                    .formLogin()
-//                    .successHandler(mySuccessHandler)
-//                    .failureHandler(myFailureHandler)
-//                    .and()
-//                    .logout();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth)
             throws Exception {
-        auth.userDetailsService(userDetailsService);
+        auth.userDetailsService(userDetailsService)
+                .passwordEncoder(new BCryptPasswordEncoder());
     }
 }

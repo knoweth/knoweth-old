@@ -1,9 +1,9 @@
 package com.github.knoweth.server;
 
-import com.github.knoweth.common.data.Account;
 import com.github.knoweth.common.data.Document;
 import com.github.knoweth.server.auth.User;
 import com.github.knoweth.server.auth.UserRepository;
+import com.github.knoweth.server.storage.DocumentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -27,7 +27,7 @@ public class Application {
     @Bean
     public CommandLineRunner demo(DocumentRepository repository, UserRepository userRepository) {
         return (args) -> {
-            repository.save(new Document(new Account("pog", "pog"), new ArrayList<>()));
+            repository.save(new Document("test", new ArrayList<>()));
 
             // fetch all customers
             log.info("Customers found with findAll():");

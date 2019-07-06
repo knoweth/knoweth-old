@@ -1,6 +1,5 @@
-package com.github.knoweth.server;
+package com.github.knoweth.server.storage;
 
-import com.github.knoweth.common.data.Account;
 import com.github.knoweth.common.data.Document;
 import org.springframework.data.repository.CrudRepository;
 
@@ -14,5 +13,5 @@ import java.util.List;
  * @author Kevin Liu
  */
 public interface DocumentRepository extends CrudRepository<Document, Long> {
-    List<Document> findByAuthor(Account author);
+    List<Document> findByAuthor(String author);
 }

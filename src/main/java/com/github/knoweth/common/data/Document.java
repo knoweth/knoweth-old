@@ -9,14 +9,13 @@ public class Document {
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Account author;
+    private String author;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Section> sections;
 
     protected Document() {}
 
-    public Document(Account author, List<Section> sections) {
+    public Document(String author, List<Section> sections) {
         this.author = author;
         this.sections = sections;
     }
@@ -25,7 +24,7 @@ public class Document {
         return id;
     }
 
-    public Account getAuthor() {
+    public String getAuthor() {
         return author;
     }
 

@@ -30,7 +30,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
-        <flavour.version>0.1.0</flavour.version>
+        <flavour.version>0.2.0-dev-52</flavour.version>
         <teavm.version>0.6.0-dev-751</teavm.version>
     </properties>
 
@@ -80,7 +80,6 @@
             <artifactId>teavm-metaprogramming-impl</artifactId>
             <version>${teavm.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.teavm.flavour</groupId>
             <artifactId>teavm-flavour-widgets</artifactId>

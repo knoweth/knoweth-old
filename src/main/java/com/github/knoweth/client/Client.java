@@ -14,6 +14,7 @@ public class Client extends ApplicationTemplate implements Routes {
                 .update();
 
         client.bind("application-content");
+        System.out.println("profound");
     }
     @Override
     public void index() {
@@ -21,15 +22,8 @@ public class Client extends ApplicationTemplate implements Routes {
     }
 
     @Override
-    public void hello(String name) {
-//        setView(new HelloView(name));
+    public void about() {
+        setView(new AboutView());
     }
-
-    @Override
-    public void goodbye() {
-//        setView(new GoodbyeView());
-    }
-
-
 }
 

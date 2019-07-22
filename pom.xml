@@ -96,6 +96,20 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.fizzed</groupId>
+                <artifactId>fizzed-watcher-maven-plugin</artifactId>
+                <version>1.0.4</version>
+                <configuration>
+                    <files>
+                        <param>src/main/java</param>
+                        <param>src/main/resources</param>
+                    </files>
+                    <goals>
+                        <param>compile</param>
+                    </goals>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
@@ -119,15 +133,18 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
+                        <phase>
+                            compile
+                        </phase>
                         <configuration>
                             <targetDirectory>${project.build.directory}/generated/js/teavm</targetDirectory>
                             <mainClass>com.github.knoweth.client.Client</mainClass>
-                            <minifying>true</minifying>
+                            <minifying>false</minifying>
                             <debugInformationGenerated>true</debugInformationGenerated>
                             <sourceMapsGenerated>true</sourceMapsGenerated>
                             <sourceFilesCopied>true</sourceFilesCopied>
-                            <optimizationLevel>ADVANCED</optimizationLevel>
-                            <incremental>true</incremental>
+                            <!--                            <optimizationLevel>ADVANCED</optimizationLevel>-->
+                            <incremental>false</incremental>
                         </configuration>
                     </execution>
                 </executions>

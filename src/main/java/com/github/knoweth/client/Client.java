@@ -1,10 +1,9 @@
 package com.github.knoweth.client;
 
+import com.github.knoweth.client.services.LoginBody;
 import com.github.knoweth.client.services.StorageService;
-import com.github.knoweth.client.views.AboutView;
-import com.github.knoweth.client.views.DocumentsView;
-import com.github.knoweth.client.views.IndexView;
-import com.github.knoweth.client.views.Routes;
+import com.github.knoweth.client.services.UserService;
+import com.github.knoweth.client.views.*;
 import org.teavm.flavour.rest.RESTClient;
 import org.teavm.flavour.templates.BindTemplate;
 import org.teavm.flavour.widgets.ApplicationTemplate;
@@ -14,7 +13,15 @@ import org.teavm.flavour.widgets.RouteBinder;
 @BindTemplate("templates/client.html")
 public class Client extends ApplicationTemplate implements Routes {
     public static void main(String[] args) {
-        // pog
+        UserService r = RESTClient.factory(UserService.class).createResource("");
+        BackgroundWorker worker = new BackgroundWorker();
+        worker.run(() -> {
+            try {
+                r.login(new LoginBody("bob", "bob"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         Client client = new Client();
         new RouteBinder()
                 .withDefault(Routes.class, Routes::index)
@@ -37,6 +44,11 @@ public class Client extends ApplicationTemplate implements Routes {
     @Override
     public void documents() {
         setView(new DocumentsView());
+    }
+
+    @Override
+    public void registration() {
+        setView(new RegistrationView());
     }
 }
 

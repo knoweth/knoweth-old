@@ -15,15 +15,6 @@ public class DocumentsView {
     private List<Document> documents = new ArrayList<>();
 
     public DocumentsView() {
-        StorageService r = RESTClient.factory(StorageService.class).createResource("api");
-        BackgroundWorker worker = new BackgroundWorker();
-        worker.run(() -> {
-            try {
-                System.out.println(r.getDocuments(0));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
         documents.add(new Document("profound", new ArrayList<>()));
     }
 

@@ -14,5 +14,8 @@ public interface Routes extends Route {
 
     @Path("/documents")
     void documents();
+
+    @Path("/registration")
+    void registration();
 }
 

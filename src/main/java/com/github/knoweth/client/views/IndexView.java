@@ -1,4 +1,4 @@
-package com.github.knoweth.client;
+package com.github.knoweth.client.views;
 
 import org.teavm.flavour.templates.BindTemplate;
 

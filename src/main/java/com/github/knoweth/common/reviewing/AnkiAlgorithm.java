@@ -226,7 +226,8 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
             case LEARNING_TWO:
                 return INTERVAL_LEARNING_TWO;
             case GRADUATED:
-                return intervals.get(card).truncatedTo(ChronoUnit.DAYS);
+                // TODO truncate to days
+                return intervals.get(card);
             case NEW:
             default:
                 throw new IllegalStateException("Invalid learning step");

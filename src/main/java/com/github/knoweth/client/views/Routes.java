@@ -1,4 +1,4 @@
-package com.github.knoweth.client;
+package com.github.knoweth.client.views;
 
 import org.teavm.flavour.routing.Path;
 import org.teavm.flavour.routing.PathSet;
@@ -11,5 +11,8 @@ public interface Routes extends Route {
 
     @Path("/about")
     void about();
+
+    @Path("/documents")
+    void documents();
 }
 

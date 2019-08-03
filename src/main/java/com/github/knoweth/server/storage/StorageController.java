@@ -66,7 +66,7 @@ public class StorageController {
     public ResponseEntity<Object> updateDocument(@RequestBody Document doc, @PathVariable long id) {
         User user = UserUtils.getUser();
         Optional<Document> savedDoc = documentRepository.findById(id);
-        if (savedDoc.isEmpty()) {
+        if (!savedDoc.isPresent()) {
             return ResponseEntity.notFound().build();
         } else if (!savedDoc.get().getAuthor().equals(user.getUsername())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

@@ -16,11 +16,7 @@ public class Client extends ApplicationTemplate implements Routes {
         UserService r = RESTClient.factory(UserService.class).createResource("");
         BackgroundWorker worker = new BackgroundWorker();
         worker.run(() -> {
-            try {
-                r.login(new LoginBody("bob", "bob"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            r.login(new LoginBody("bob", "bob"));
         });
         Client client = new Client();
         new RouteBinder()

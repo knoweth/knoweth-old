@@ -30,7 +30,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <flavour.version>0.1.0</flavour.version>
+        <flavour.version>0.2.0-dev-70</flavour.version>
         <teavm.version>0.6.0-dev-816</teavm.version>
     </properties>
 
@@ -146,8 +146,8 @@
                             <mainClass>com.github.knoweth.client.Client</mainClass>
                             <minifying>false</minifying>
 <!--                            <debugInformationGenerated>true</debugInformationGenerated>-->
-<!--                            <sourckeMapsGenerated>true</sourckeMapsGenerated>-->
-<!--                            <sourceFilesCopied>true</sourceFilesCopied>-->
+                            <sourceMapsGenerated>true</sourceMapsGenerated>
+                            <sourceFilesCopied>true</sourceFilesCopied>
                             <!--                            <optimizationLevel>ADVANCED</optimizationLevel>-->
 <!--                            <incremental>false</incremental>-->
 <!--                            <optimizationLevel>SIMPLE</optimizationLevel>-->

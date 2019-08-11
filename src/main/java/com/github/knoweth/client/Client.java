@@ -13,9 +13,6 @@ import org.teavm.flavour.widgets.RouteBinder;
 @BindTemplate("templates/client.html")
 public class Client extends ApplicationTemplate implements Routes {
     public static void main(String[] args) {
-        UserService r = RESTClient.factory(UserService.class).createResource("");
-        BackgroundWorker worker = new BackgroundWorker();
-        worker.run(() -> r.login(new LoginBody("bob", "bob")));
         Client client = new Client();
         new RouteBinder()
                 .withDefault(Routes.class, Routes::index)

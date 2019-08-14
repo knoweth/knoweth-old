@@ -1,8 +1,10 @@
 package com.github.knoweth.server.auth;
 
+import com.github.knoweth.common.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.jaas.JaasAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
@@ -20,16 +22,16 @@ public class UserController {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @PostMapping("/register")
-    public String register(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response register(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
         if (userRepository.findByUsername(user.getUsername()) != null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return "User already exists";
+            return Response.err("User already exists");
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             logger.info("Adding user: " + user.toString());
             userRepository.save(user);
-            return "Success";
+            return Response.success("Success!");
         }
     }
 

@@ -1,13 +1,8 @@
 package com.github.knoweth.client;
 
-import com.github.knoweth.client.services.LoginBody;
-import com.github.knoweth.client.services.StorageService;
-import com.github.knoweth.client.services.UserService;
 import com.github.knoweth.client.views.*;
-import org.teavm.flavour.rest.RESTClient;
 import org.teavm.flavour.templates.BindTemplate;
 import org.teavm.flavour.widgets.ApplicationTemplate;
-import org.teavm.flavour.widgets.BackgroundWorker;
 import org.teavm.flavour.widgets.RouteBinder;
 
 @BindTemplate("templates/client.html")
@@ -40,6 +35,11 @@ public class Client extends ApplicationTemplate implements Routes {
     @Override
     public void registration() {
         setView(new RegistrationView());
+    }
+
+    @Override
+    public void login() {
+        setView(new LoginView());
     }
 }
 

@@ -4,10 +4,7 @@ import com.github.knoweth.common.Response;
 import org.teavm.flavour.json.JsonPersistable;
 import org.teavm.flavour.rest.Resource;
 
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 
 @Path("")
 @Resource
@@ -58,4 +55,8 @@ public interface UserService {
     @Path("api/users/register")
     @POST
     Response register(RegistrationBody body);
+
+    @Path("api/users/welcome")
+    @GET
+    Response welcome();
 }

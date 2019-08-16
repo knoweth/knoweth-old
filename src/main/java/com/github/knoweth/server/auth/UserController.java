@@ -46,8 +46,8 @@ public class UserController {
         return "login";
     }
 
-    @GetMapping({"/", "/welcome"})
-    public String welcome(Model model) {
-        return "welcome";
+    @GetMapping(value = {"/", "/welcome"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response welcome(Model model) {
+        return Response.success("Welcome");
     }
 }

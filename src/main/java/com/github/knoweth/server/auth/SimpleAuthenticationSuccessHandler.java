@@ -11,9 +11,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * This component essentially just redirects to /#/home after logging in. This
+ * is necessary because otherwise Spring tries to redirect you to the last
+ * authenticated endpoint, which is usually the status endpoint telling you
+ * whether or not you've logged in. For an API-esque server, this isn't very
+ * useful.
+ */
 @Component
 public class SimpleAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override

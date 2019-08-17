@@ -1,5 +1,6 @@
 package com.github.knoweth.client.views;
 
+import com.github.knoweth.client.services.Services;
 import com.github.knoweth.client.services.StorageService;
 import com.github.knoweth.common.data.Document;
 import org.teavm.flavour.rest.RESTClient;
@@ -11,11 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @BindTemplate("templates/documents.html")
-public class DocumentsView {
+public class DocumentsView extends AuthenticatedView {
     private List<Document> documents = new ArrayList<>();
 
     public DocumentsView() {
-        documents.add(new Document("profound", new ArrayList<>()));
+        new BackgroundWorker().run(() -> {
+            System.out.println(Services.STORAGE.getDocuments());
+        });
     }
 
     public List<Document> getDocuments() {

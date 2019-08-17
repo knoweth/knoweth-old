@@ -14,5 +14,5 @@ public interface StorageService {
 
     @GET
     @Path("docs")
-    List<Document> getDocuments(@QueryParam("a") int a);
+    List<Document> getDocuments();
 }

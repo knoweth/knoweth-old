@@ -21,19 +21,20 @@ public class Client extends ApplicationTemplate implements Routes {
                 .update();
 
         client.bind("application-content");
+
+    }
+
+    public Client() {
+        if (!dataCache.isUserLoaded()) {
+            dataCache.loadCurrentUser();
+        }
     }
 
     public String getUsername() {
-        if (!dataCache.isUserLoaded()) {
-            new BackgroundWorker().run(dataCache::loadCurrentUser);
+        if (!dataCache.isUserLoaded() || dataCache.getCurrentUser() == null) {
             return null;
         } else {
-            User user = dataCache.getCurrentUser();
-            if (user == null) {
-                return null;
-            } else {
-                return user.getUsername();
-            }
+            return dataCache.getCurrentUser().getUsername();
         }
     }
 

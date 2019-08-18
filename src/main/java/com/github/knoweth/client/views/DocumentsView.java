@@ -21,13 +21,10 @@ public class DocumentsView extends AuthenticatedView {
 
     public DocumentsView(UserCache userCache) {
         this.userCache = userCache;
+        new BackgroundWorker().run(() -> documents = Services.STORAGE.getDocuments());
     }
 
     public List<Document> getDocuments() {
-        if (documents == null) {
-            new BackgroundWorker().run(() -> documents = Services.STORAGE.getDocuments());
-        }
-
         return documents;
     }
 

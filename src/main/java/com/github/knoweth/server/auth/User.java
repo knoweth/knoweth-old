@@ -1,17 +1,22 @@
 package com.github.knoweth.server.auth;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.teavm.flavour.json.JsonPersistable;
+
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
-public class User {
+@JsonPersistable
+public class User implements UserDetails {
     @Id
     @GeneratedValue
     private Long id;
     private String username;
     private String password;
-    @ElementCollection
+    @Transient
     private Set<String> roles;
 
     public User() {
@@ -43,8 +48,33 @@ public class User {
         this.password = password;
     }
 
-    public Set<String> getRoles() {
-        return roles;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role));
+        }
+        return authorities;
     }
 
     @Override

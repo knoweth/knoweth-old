@@ -21,14 +21,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    private static List<GrantedAuthority> getAuthorities(Set<String> roles) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        for (String role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role));
-        }
-        return authorities;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) {
@@ -36,7 +28,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (u == null) {
             throw new UsernameNotFoundException(username);
         }
-        return new org.springframework.security.core.userdetails.User(
-                u.getUsername(), u.getPassword(), getAuthorities(u.getRoles()));
+        return u;
     }
 }

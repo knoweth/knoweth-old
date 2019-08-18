@@ -1,8 +1,31 @@
-<h1>Documents</h1>
+<div class="jumbotron text-center">
+    <h1>Documents</h1>
+</div>
+
 <ul>
     <std:foreach var="document" in="documents">
         <li>
+            <html:text value="document.id"/>
             <html:text value="document.author"/>
         </li>
     </std:foreach>
 </ul>
+
+<p>
+    <std:if condition="documents.size() == 0">
+        No documents found. Try creating one below!
+    </std:if>
+</p>
+
+<form class="form-inline" event:submit="onCreateDocument()">
+    <div class="form-group row mb-2 col-sm-8">
+        <label for="new-document-name" class="sr-only">Document Name</label>
+        <div class="col-sm-8">
+            <input id="new-document-name" type="text" class="form-control" html:value="newDocumentName"
+                   html:change="newDocumentName" required
+                   placeholder="Document Name"/>
+        </div>
+
+        <button type="submit" class="btn btn-primary mb-2 col-sm-4">Create Document</button>
+    </div>
+</form>

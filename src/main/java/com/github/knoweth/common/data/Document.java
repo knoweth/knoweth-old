@@ -1,22 +1,27 @@
 package com.github.knoweth.common.data;
 
 
+import org.teavm.flavour.json.JsonPersistable;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@JsonPersistable
 public class Document {
     @Id
     @GeneratedValue
     private Long id;
+    private String title;
     private String author;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Section> sections;
 
     protected Document() {}
 
-    public Document(String author, List<Section> sections) {
+    public Document(String author, String title, List<Section> sections) {
         this.author = author;
+        this.title = title;
         this.sections = sections;
     }
 
@@ -30,6 +35,14 @@ public class Document {
 
     public String getAuthor() {
         return author;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public List<Section> getSections() {

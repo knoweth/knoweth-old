@@ -27,7 +27,7 @@ public class Application {
     @Bean
     public CommandLineRunner demo(DocumentRepository repository, UserRepository userRepository) {
         return (args) -> {
-            repository.save(new Document("test", new ArrayList<>()));
+            repository.save(new Document("test", "test", new ArrayList<>()));
         };
     }
 }

@@ -14,14 +14,19 @@ import java.util.List;
 @BindTemplate("templates/documents.html")
 public class DocumentsView extends AuthenticatedView {
     private List<Document> documents = new ArrayList<>();
+    public String newDocumentName;
 
     public DocumentsView() {
         new BackgroundWorker().run(() -> {
-            System.out.println(Services.STORAGE.getDocuments());
+            documents = Services.STORAGE.getDocuments();
         });
     }
 
     public List<Document> getDocuments() {
         return documents;
+    }
+
+    public void onCreateDocument() {
+        Services.STORAGE.createDocument(new Document("test", newDocumentName, new ArrayList<>()));
     }
 }

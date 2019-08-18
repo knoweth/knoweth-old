@@ -25,6 +25,6 @@ public class SimpleAuthenticationSuccessHandler implements AuthenticationSuccess
     @Override
     public void onAuthenticationSuccess(HttpServletRequest arg0, HttpServletResponse arg1, Authentication authentication)
             throws IOException {
-        redirectStrategy.sendRedirect(arg0, arg1, "/#/home");
+        redirectStrategy.sendRedirect(arg0, arg1, "/#/documents");
     }
 }

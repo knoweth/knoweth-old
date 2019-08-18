@@ -11,10 +11,10 @@ public abstract class AuthenticatedView {
     public AuthenticatedView() {
         new BackgroundWorker().run(() -> {
             try {
-                Services.USER.welcome();
+                Services.USER.status();
             } catch (HttpStatusException e) {
                 if (e.getStatus() == HttpServletResponse.SC_UNAUTHORIZED) {
-                    Location.current().setFullURL("/login");
+                    Location.current().setHash("/login");
                 }
             }
         });

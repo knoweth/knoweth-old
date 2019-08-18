@@ -1,6 +1,7 @@
 package com.github.knoweth.client.services;
 
 import com.github.knoweth.common.Response;
+import com.github.knoweth.server.auth.User;
 import org.teavm.flavour.json.JsonPersistable;
 import org.teavm.flavour.rest.Resource;
 
@@ -56,7 +57,7 @@ public interface UserService {
     @POST
     Response register(RegistrationBody body);
 
-    @Path("api/users/welcome")
+    @Path("api/users/status")
     @GET
-    Response welcome();
+    User status();
 }

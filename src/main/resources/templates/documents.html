@@ -3,12 +3,14 @@
 </div>
 
 <ul>
-    <std:foreach var="document" in="documents">
-        <li>
-            <html:text value="document.id"/>
-            <html:text value="document.author"/>
-        </li>
-    </std:foreach>
+    <std:if condition="documents != null">
+        <std:foreach var="document" in="documents">
+            <li>
+                <html:text value="document.id"/>
+                <html:text value="document.author"/>
+            </li>
+        </std:foreach>
+    </std:if>
 </ul>
 
 <p>

@@ -7,6 +7,10 @@ import com.github.knoweth.server.auth.User;
  */
 public interface UserCache {
     User getCurrentUser();
-    void loadCurrentUser();
+
+    /**
+     * Async method to load current user or return it if already loaded.
+     */
+    User loadCurrentUser();
     boolean isUserLoaded();
 }

@@ -24,7 +24,7 @@ public class DataCache implements UserCache {
     }
 
     @Override
-    public void loadCurrentUser() {
+    public User loadCurrentUser() {
         try {
             currentUser = Services.USER.status();
         } catch (HttpStatusException e) {
@@ -37,6 +37,7 @@ public class DataCache implements UserCache {
             }
         }
         isUserLoaded = true;
+        return currentUser;
     }
 
     @Override

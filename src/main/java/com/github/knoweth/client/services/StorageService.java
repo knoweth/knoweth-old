@@ -3,10 +3,7 @@ package com.github.knoweth.client.services;
 import com.github.knoweth.common.data.Document;
 import org.teavm.flavour.rest.Resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import java.util.List;
 
 @Path("storage")
@@ -20,4 +17,8 @@ public interface StorageService {
     @POST
     @Path("docs")
     void createDocument(Document doc);
+
+    @GET
+    @Path("docs/{id}")
+    Document getDocument(@PathParam("id") int id);
 }

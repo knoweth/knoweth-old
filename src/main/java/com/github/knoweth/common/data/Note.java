@@ -1,5 +1,7 @@
 package com.github.knoweth.common.data;
 
+import org.teavm.flavour.json.JsonPersistable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -8,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Inheritance
+@JsonPersistable
 abstract class Note {
     @Id
     @GeneratedValue

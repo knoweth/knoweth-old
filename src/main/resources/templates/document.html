@@ -1,0 +1,34 @@
+<h1>Document #
+    <html:text value="id"/>
+</h1>
+
+<std:if condition="document != null">
+    <p>
+        <strong>Author</strong>:
+        <html:text value="document.author"/>
+    </p>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Edit</th>
+            <th>Preview</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <std:foreach var="section" in="document.sections">
+            <tr>
+                <td>
+                    <textarea html:change="section.title"><html:text value="section.title" /></textarea>
+                </td>
+                <td>
+
+                </td>
+            </tr>
+        </std:foreach>
+        </tbody>
+    </table>
+
+    <button class="btn btn-primary" event:click="addSection()">Add Section</button>
+</std:if>

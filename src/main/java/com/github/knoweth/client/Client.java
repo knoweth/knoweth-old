@@ -49,6 +49,11 @@ public class Client extends ApplicationTemplate implements Routes {
     }
 
     @Override
+    public void document(int id) {
+        setView(new DocumentView(id));
+    }
+
+    @Override
     public void documents() {
         setView(new DocumentsView(dataCache));
     }

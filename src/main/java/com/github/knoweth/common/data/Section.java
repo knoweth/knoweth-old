@@ -1,9 +1,12 @@
 package com.github.knoweth.common.data;
 
+import org.teavm.flavour.json.JsonPersistable;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@JsonPersistable
 public class Section {
     @Id
     @GeneratedValue
@@ -15,6 +18,10 @@ public class Section {
     private List<Section> subsections;
 
     public Section() {}
+
+    public Section(String title) {
+        this.title = title;
+    }
 
     public String getTitle() {
         return title;

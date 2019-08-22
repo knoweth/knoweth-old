@@ -1,8 +1,6 @@
-<h1>Document #
-    <html:text value="id"/>
-</h1>
-
 <std:if condition="document != null">
+    <h1>Document #<html:text value="document.id"/> -  <html:text value="document.title"/>
+    </h1>
     <p>
         <strong>Author</strong>:
         <html:text value="document.author"/>
@@ -20,7 +18,7 @@
         <std:foreach var="section" in="document.sections">
             <tr>
                 <td>
-                    <textarea html:change="section.title"><html:text value="section.title" /></textarea>
+                    <textarea html:change="section.title"><html:text value="section.title"/></textarea>
                 </td>
                 <td>
 
@@ -31,4 +29,10 @@
     </table>
 
     <button class="btn btn-primary" event:click="addSection()">Add Section</button>
+
+    <button class="btn btn-primary" event:click="save()">Save</button>
+
+    <std:if condition="saveMessage != null">
+        <p><html:text value="saveMessage"/></p>
+    </std:if>
 </std:if>

@@ -21,4 +21,8 @@ public interface StorageService {
     @GET
     @Path("docs/{id}")
     Document getDocument(@PathParam("id") int id);
+
+    @PUT
+    @Path("docs/{id}")
+    void setDocument(@PathParam("id") int id, Document newDoc);
 }

@@ -1,2 +1,17 @@
-body {
+.k-pg-document .k-input--no-styling {
+    -moz-appearance: none;
+    border: 0;
+}
+
+.k-note {
+    display: flex;
+    flex-flow: row nowrap;
+}
+.k-note__front {
+    margin: 1em;
+    width: 50%;
+}
+.k-note__back {
+    margin: 1em;
+    width: 50%;
 }

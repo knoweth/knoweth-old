@@ -10,12 +10,12 @@ import java.util.UUID;
 public class Card {
     private String front;
     private String back;
-    private UUID uuid;
+    private String id;
 
-    public Card(String front, String back, UUID uuid) {
+    public Card(String front, String back, String id) {
         this.front = front;
         this.back = back;
-        this.uuid = uuid;
+        this.id = id;
     }
 
     public String getFront() {
@@ -26,8 +26,8 @@ public class Card {
         return back;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -35,16 +35,16 @@ public class Card {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Card card = (Card) o;
-        return uuid.equals(card.uuid);
+        return id.equals(card.id);
     }
 
     @Override
     public String toString() {
-        return "Card[uuid=" + getUuid() + "]";
+        return "Card[id=" + getId() + "]";
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid);
+        return Objects.hash(id);
     }
 }

@@ -6,14 +6,11 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.util.UUID;
 
+import static com.github.knoweth.common.reviewing.TestUtil.newCard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AnkiAlgorithmTest {
     private AnkiAlgorithm r = new AnkiAlgorithm();
-
-    private Card newCard() {
-        return new Card(null, null, UUID.randomUUID());
-    }
 
     @Test
     void continualGoodIntervalTests() {

@@ -1,38 +1,49 @@
 <std:if condition="document != null">
-    <h1>Document #<html:text value="document.id"/> -  <html:text value="document.title"/>
+    <h1>Document #
+        <html:text value="document.id"/>
+        -
+        <html:text value="document.title"/>
     </h1>
     <p>
         <strong>Author</strong>:
         <html:text value="document.author"/>
     </p>
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Edit</th>
-            <th>Preview</th>
-        </tr>
-        </thead>
+    <std:foreach var="section" index="sectionId" in="document.sections">
+        <textarea html:change="section.title"><html:text value="section.title"/></textarea>
 
-        <tbody>
-        <std:foreach var="section" in="document.sections">
+        <table class="table">
+            <thead>
             <tr>
-                <td>
-                    <textarea html:change="section.title"><html:text value="section.title"/></textarea>
-                </td>
-                <td>
-
-                </td>
+                <th>Edit</th>
+                <th>Preview</th>
             </tr>
-        </std:foreach>
-        </tbody>
-    </table>
+            </thead>
+
+            <tbody>
+            <std:foreach var="note" in="section.notes">
+                <tr>
+                    <td>
+                        <textarea html:value="note.front" html:change="note.front"></textarea>
+                        <html:text value="note.back"/>
+                    </td>
+                </tr>
+            </std:foreach>
+            </tbody>
+        </table>
+
+        <p>
+            <button class="btn btn-primary" event:click="addNote(sectionId)">Add Note</button>
+        </p>
+    </std:foreach>
 
     <button class="btn btn-primary" event:click="addSection()">Add Section</button>
 
-    <button class="btn btn-primary" event:click="save()">Save</button>
+    <button class="btn btn-success" event:click="save()">Save</button>
 
     <std:if condition="saveMessage != null">
-        <p><html:text value="saveMessage"/></p>
+        <p>
+            <html:text value="saveMessage"/>
+        </p>
     </std:if>
 </std:if>

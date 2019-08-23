@@ -11,6 +11,9 @@ import org.teavm.flavour.widgets.AbstractWidget;
 
 import java.util.function.Supplier;
 
+/**
+ * Component that renders its content as markdown.
+ */
 @BindTemplate("templates/components/markdown.html")
 @BindElement(name = "markdown")
 public class MarkdownComponent extends AbstractWidget {

@@ -1,8 +1,10 @@
 package com.github.knoweth.common.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.teavm.flavour.json.JsonPersistable;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -10,12 +12,13 @@ import java.util.List;
 public class Section {
     @Id
     @GeneratedValue
+    @JsonIgnore
     private Long id;
     private String title;
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Note> notes;
+    private List<Note> notes = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Section> subsections;
+    private List<Section> subsections = new ArrayList<>();
 
     public Section() {}
 

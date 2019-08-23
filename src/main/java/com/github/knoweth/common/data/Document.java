@@ -1,9 +1,11 @@
 package com.github.knoweth.common.data;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.teavm.flavour.json.JsonPersistable;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -11,11 +13,12 @@ import java.util.List;
 public class Document {
     @Id
     @GeneratedValue
+    @JsonIgnore
     private Long id;
     private String title;
     private String author;
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     protected Document() {}
 

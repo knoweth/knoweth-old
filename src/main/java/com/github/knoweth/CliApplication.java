@@ -17,7 +17,7 @@ public class CliApplication {
         System.out.println("Knoweth - Command-Line Reviewing Interface");
 
         ReviewTracker tracker = new ReviewTracker(new AnkiAlgorithm());
-        Card card = new Card("What is 2 + 2?", "5", UUID.randomUUID());
+        Card card = new Card("What is 2 + 2?", "5", "random-id");
 
         Scanner in = new Scanner(System.in);
         tracker.markReviewed(card, Duration.ZERO, ReviewQuality.AGAIN);

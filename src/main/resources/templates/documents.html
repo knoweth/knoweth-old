@@ -2,16 +2,31 @@
     <h1>Documents</h1>
 </div>
 
-<ul>
+<div class="card-columns">
     <std:if condition="documents != null">
         <std:foreach var="document" in="documents">
-            <li>
-                <html:text value="document.id"/>
-                <html:text value="document.author"/>
-            </li>
+            <div class="card m-3" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <html:text value="document.title"/>
+                    </h5>
+                    <p class="card-text">Document #
+                        <html:text value="document.id"/>
+                    </p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Author</strong>:
+                        <html:text value="document.author"/>
+                    </li>
+                </ul>
+                <div class="card-body">
+                    <a html:link="it.accept('/documents/' + document.id)" class="card-link">Edit</a>
+                    <a html:link="it.accept('/review/' + document.id)" class="card-link">Review</a>
+                </div>
+            </div>
         </std:foreach>
     </std:if>
-</ul>
+</div>
 
 <p>
     <std:if condition="documents != null && documents.size() == 0">

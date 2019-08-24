@@ -13,7 +13,6 @@ import java.util.List;
 public class Document {
     @Id
     @GeneratedValue
-    @JsonIgnore
     private Long id;
     private String title;
     private String author;

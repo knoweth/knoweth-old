@@ -57,19 +57,7 @@ public class DocumentView extends AuthenticatedView {
         });
     }
 
-    /**
-     * Generates a random number within a certain range.
-     * @param min the minimum value to generate, inclusive
-     * @param max the maximum value to generate, inclusive (must be less than Integer.MAX_VALUE)
-     * @return a random number between min and max
-     */
-    private static int getRandomNumberInRange(int min, int max) {
-        if (min >= max) {
-            throw new IllegalArgumentException("max must be greater than min");
-        }
-
-        Random r = new Random();
-        return r.nextInt((max - min) + 1) + min;
+    public void removeNote(int sectionId, int noteId) {
+        document.getSections().get(sectionId).getNotes().remove(noteId);
     }
-
 }

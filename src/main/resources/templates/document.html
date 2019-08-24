@@ -23,7 +23,7 @@
                 </thead>
 
                 <tbody>
-                <std:foreach var="note" in="section.notes">
+                <std:foreach var="note" in="section.notes" index="noteId">
                     <tr>
                         <td style="width: 50%">
                             <div class="k-note card">
@@ -31,6 +31,11 @@
                                           placeholder="Note Front"></textarea>
                                 <textarea class="k-note__back" html:value="note.back" html:change="note.back"
                                           placeholder="Note Back"></textarea>
+                                <div class="card-footer">
+                                    <button class="btn btn-danger" event:click="removeNote(sectionId, noteId)">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                </div>
                             </div>
                         </td>
                         <td style="width: 50%">

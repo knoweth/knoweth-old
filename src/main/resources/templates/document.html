@@ -25,16 +25,16 @@
                 <tbody>
                 <std:foreach var="note" in="section.notes">
                     <tr>
-                        <td>
-                            <div class="k-note">
+                        <td style="width: 50%">
+                            <div class="k-note card">
                                 <textarea class="k-note__front" html:value="note.front" html:change="note.front"
                                           placeholder="Note Front"></textarea>
                                 <textarea class="k-note__back" html:value="note.back" html:change="note.back"
                                           placeholder="Note Back"></textarea>
                             </div>
                         </td>
-                        <td>
-                            <div class="k-note">
+                        <td style="width: 50%">
+                            <div class="k-note card">
                                 <div class="k-note__front">
                                     <k:markdown content="note.front"/>
                                 </div>

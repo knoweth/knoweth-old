@@ -1,8 +1,6 @@
 package com.github.knoweth.client.components;
 
-import org.commonmark.node.Node;
-import org.commonmark.parser.Parser;
-import org.commonmark.renderer.html.HtmlRenderer;
+import com.github.knoweth.client.util.MarkdownParser;
 import org.teavm.flavour.templates.*;
 import org.teavm.flavour.widgets.AbstractWidget;
 import org.teavm.jso.browser.Window;
@@ -10,6 +8,9 @@ import org.teavm.jso.dom.html.HTMLElement;
 
 import java.util.function.Supplier;
 
+/**
+ * Component that renders its contents as Markdown.
+ */
 @BindElement(name = "markdown")
 @IgnoreContent
 public class MarkdownComponent extends AbstractWidget {
@@ -34,14 +35,12 @@ public class MarkdownComponent extends AbstractWidget {
     @Override
     public void render() {
         if (renderedSlot != null) {
+            // Remove previously-rendered content
             renderedSlot.delete();
         }
 
         String raw = contentSupplier.get();
-        Parser parser = Parser.builder().build();
-        Node document = parser.parse(raw);
-        HtmlRenderer render = HtmlRenderer.builder().build();
-        String html = render.render(document);
+        String html = MarkdownParser.renderToHtml(raw);
         HTMLElement node = Window.current().getDocument().createElement("div");
         node.setInnerHTML(html);
 

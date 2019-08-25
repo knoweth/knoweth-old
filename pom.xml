@@ -36,9 +36,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.atlassian.commonmark</groupId>
-            <artifactId>commonmark</artifactId>
-            <version>0.13.0</version>
+            <groupId>com.vladsch.flexmark</groupId>
+            <artifactId>flexmark</artifactId>
+            <version>0.50.28</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vladsch.flexmark</groupId>
+            <artifactId>flexmark-ext-gitlab</artifactId>
+            <version>0.50.28</version>
         </dependency>
 
         <dependency>
@@ -151,12 +157,12 @@
                             <targetDirectory>${project.build.directory}/generated/js/teavm</targetDirectory>
                             <mainClass>com.github.knoweth.client.Client</mainClass>
                             <minifying>false</minifying>
-<!--                            <debugInformationGenerated>true</debugInformationGenerated>-->
+                            <!--                            <debugInformationGenerated>true</debugInformationGenerated>-->
                             <sourceMapsGenerated>true</sourceMapsGenerated>
                             <sourceFilesCopied>true</sourceFilesCopied>
                             <!--                            <optimizationLevel>ADVANCED</optimizationLevel>-->
-<!--                            <incremental>false</incremental>-->
-<!--                            <optimizationLevel>SIMPLE</optimizationLevel>-->
+                            <!--                            <incremental>false</incremental>-->
+                            <!--                            <optimizationLevel>SIMPLE</optimizationLevel>-->
                         </configuration>
                     </execution>
                 </executions>

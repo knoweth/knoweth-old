@@ -14,6 +14,11 @@ import java.util.Date;
  * with the good old Java Date.
  */
 public class DateUtil {
+    /**
+     * @param one date to compare
+     * @param two other date to compare
+     * @return whether both dates are on the same day
+     */
     public static boolean sameDay(Date one, Date two) {
         // This may seem horrible, but according to StackOverflow, this is
         // actually faster than the Calendar implementation.
@@ -22,10 +27,22 @@ public class DateUtil {
         return fmt.format(one).equals(fmt.format(two));
     }
 
+    /**
+     * Adds a Duration to a Date.
+     * @param date the date
+     * @param duration the duration to add
+     * @return the added value
+     */
     public static Date addDuration(Date date, Duration duration) {
         return new Date(date.getTime() + duration.toMillis());
     }
 
+    /**
+     * Subtracts a Duration from a Date.
+     * @param date the date
+     * @param duration the duration to subtract
+     * @return the subtracted value
+     */
     public static Date subDuration(Date date, Duration duration) {
         return new Date(date.getTime() - duration.toMillis());
     }

@@ -3,7 +3,7 @@ package com.github.knoweth.common.reviewing;
 import com.github.knoweth.common.data.Card;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
+import org.threeten.bp.Duration;
 import java.util.UUID;
 
 import static com.github.knoweth.common.reviewing.TestUtil.newCard;

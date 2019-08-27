@@ -3,18 +3,17 @@ package com.github.knoweth.common.reviewing;
 import com.github.knoweth.common.data.Card;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
+import org.threeten.bp.Duration;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ReviewTrackerTest {
     @Test
     void constructsWithDefaults() {
         ReviewTracker t = new ReviewTracker(new AnkiAlgorithm());
-        assertEquals(0, t.getCurrentReviews().size());
+        assertNull(t.getNextReview());
     }
 
     @Test
@@ -38,5 +37,6 @@ public class ReviewTrackerTest {
         assertEquals(1, reviews.size());
         assertEquals(Duration.ZERO, reviews.get(0).getDuration());
         assertEquals(ReviewQuality.GOOD, reviews.get(0).getQuality());
+        assertNotNull(t.getNextReview()); // should still show up
     }
 }

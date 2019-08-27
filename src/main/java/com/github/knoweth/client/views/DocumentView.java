@@ -14,7 +14,6 @@ public class DocumentView extends AuthenticatedView {
     private Document document;
     private int id;
     private String saveMessage;
-    private static final Random rng = new Random();
 
     public DocumentView(int id) {
         this.id = id;

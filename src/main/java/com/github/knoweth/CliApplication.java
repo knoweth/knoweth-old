@@ -5,12 +5,11 @@ import com.github.knoweth.common.reviewing.AnkiAlgorithm;
 import com.github.knoweth.common.reviewing.ReviewQuality;
 import com.github.knoweth.common.reviewing.ReviewTracker;
 
-import java.time.Duration;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import org.threeten.bp.Duration;
+import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.format.FormatStyle;
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class CliApplication {
     public static void main(String[] args) {
@@ -58,10 +57,10 @@ public class CliApplication {
             tracker.markReviewed(card, Duration.ZERO, quality);
 
             System.out.println();
-            System.out.println("Next review date: " + tracker.getNextReviewDate(card).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)));
-            List<Card> reviews = tracker.getCurrentReviews();
+            System.out.println("Next review date: " + tracker.getNextReviewDate(card).toString());
+            Card reviews = tracker.getNextReview();
 
-            if (reviews.size() == 0) {
+            if (reviews == null) {
                 System.out.println("All reviews done. Press enter to keep reviewing, or any key + enter to exit.");
                 String input = in.nextLine();
                 if (!input.equals("")) {

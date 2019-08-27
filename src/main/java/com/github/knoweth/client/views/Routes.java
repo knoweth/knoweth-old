@@ -22,6 +22,9 @@ public interface Routes extends Route {
     @Path("/registration")
     void registration();
 
+    @Path("/review/{id}")
+    void review(@PathParameter("id") int id);
+
     @Path("/login")
     void login();
 }

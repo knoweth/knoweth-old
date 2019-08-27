@@ -41,6 +41,14 @@
             <version>0.50.28</version>
         </dependency>
 
+        <!-- Java 8 Date/Time API polyfill, since TeaVM doesn't have it in its
+        class library -->
+        <dependency>
+            <groupId>org.threeten</groupId>
+            <artifactId>threetenbp</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-ext-gitlab</artifactId>

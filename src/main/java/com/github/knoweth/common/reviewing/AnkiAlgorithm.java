@@ -4,8 +4,8 @@ import com.github.knoweth.common.data.Card;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
+import org.threeten.bp.Duration;
+import org.threeten.bp.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +28,6 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
      * 130%
      */
     private static final double EASY_BONUS = 1.30;
-
-    private final static Logger logger = LoggerFactory.getLogger(AnkiAlgorithm.class);
 
     private Map<Card, Double> easeFactors = new HashMap<>();
     private Map<Card, Integer> repetitions = new HashMap<>();

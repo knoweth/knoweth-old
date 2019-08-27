@@ -2,6 +2,7 @@ package com.github.knoweth.common.data;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.teavm.flavour.json.JsonPersistable;
 
 import javax.persistence.*;

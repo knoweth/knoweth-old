@@ -1,6 +1,7 @@
 package com.github.knoweth.common.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.teavm.flavour.json.JsonPersistable;
@@ -28,7 +29,6 @@ public class Note {
 
     @Id
     @GeneratedValue
-    @JsonIgnore
     private Long id;
     private String front;
     private String back;

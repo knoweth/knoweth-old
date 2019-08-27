@@ -1,0 +1,24 @@
+<div>
+    <std:if condition="document != null">
+        <div>ID <html:text value="id"/></div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-4">
+                    <html:text value="remaining"/>
+                </div>
+                <div class="col-8">
+                    <std:choose>
+                        <std:option when="currentCard == null">
+                            <p>You have no cards to review! Congratulations.</p>
+                        </std:option>
+                        <std:otherwise>
+                            <html:text value="currentCard.front"/>
+                            <html:text value="currentCard.back"/>
+                        </std:otherwise>
+                    </std:choose>
+                </div>
+            </div>
+        </div>
+    </std:if>
+</div>

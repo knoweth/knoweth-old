@@ -1,6 +1,7 @@
 package com.github.knoweth.common.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.teavm.flavour.json.JsonPersistable;
 
 import javax.persistence.*;
@@ -12,7 +13,6 @@ import java.util.List;
 public class Section {
     @Id
     @GeneratedValue
-    @JsonIgnore
     private Long id;
     private String title;
     @OneToMany(cascade = CascadeType.ALL)
@@ -21,6 +21,14 @@ public class Section {
     private List<Section> subsections = new ArrayList<>();
 
     public Section() {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Section(String title) {
         this.title = title;

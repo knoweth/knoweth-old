@@ -64,6 +64,11 @@ public class Client extends ApplicationTemplate implements Routes {
     }
 
     @Override
+    public void review(int id) {
+        setView(new ReviewView(id));
+    }
+
+    @Override
     public void login() {
         setView(new LoginView());
     }

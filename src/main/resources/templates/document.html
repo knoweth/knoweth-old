@@ -3,8 +3,8 @@
     <std:if condition="document != null">
         <h1>Document #
             <html:text value="id"/>
-            -
-            <html:text value="document.title"/>
+            —
+            <input html:change="document.title" html:value="document.title" class="k-input--no-styling">
         </h1>
         <p>
             <strong>Author</strong>:

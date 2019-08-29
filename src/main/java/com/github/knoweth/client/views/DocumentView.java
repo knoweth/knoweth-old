@@ -7,8 +7,6 @@ import com.github.knoweth.common.data.Section;
 import org.teavm.flavour.templates.BindTemplate;
 import org.teavm.flavour.widgets.BackgroundWorker;
 
-import java.util.Random;
-
 @BindTemplate("templates/document.html")
 public class DocumentView extends AuthenticatedView {
     private Document document;

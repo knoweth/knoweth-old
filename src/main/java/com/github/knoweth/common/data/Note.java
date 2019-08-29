@@ -84,10 +84,10 @@ public class Note {
     public List<Card> getCards() {
         List<Card> cards = new ArrayList<>();
         switch (type) {
-            case ONE_SIDED:
-                cards.add(new Card(front, back, id + "-1"));
             case TWO_SIDED:
                 cards.add(new Card(back, front, id + "-2"));
+            case ONE_SIDED:
+                cards.add(new Card(front, back, id + "-1"));
                 break;
             default:
                 throw new UnsupportedOperationException("Unimplemented note type.");

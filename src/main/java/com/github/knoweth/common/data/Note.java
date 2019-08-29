@@ -22,17 +22,17 @@ import java.util.List;
 @Entity
 @JsonPersistable
 public class Note {
-    @JsonPersistable
-    public enum Type {
-        ONE_SIDED, TWO_SIDED
-    }
+    // An enum is not used here because we must commonly reference Types by
+    // their integer value in the UI
+    public static final int TYPE_ONE_SIDED = 0;
+    public static final int TYPE_TWO_SIDED = 1;
 
     @Id
     @GeneratedValue
     private Long id;
     private String front;
     private String back;
-    private Type type;
+    private int type;
 
     /**
      * Parameterless constructor required from TeaVM json deserialization
@@ -41,7 +41,7 @@ public class Note {
 
     }
 
-    public Note(String front, String back, Type type) {
+    public Note(String front, String back, int type) {
         this.front = front;
         this.back = back;
         this.type = type;
@@ -71,11 +71,11 @@ public class Note {
         this.back = back;
     }
 
-    public Type getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(int type) {
         this.type = type;
     }
 
@@ -84,9 +84,9 @@ public class Note {
     public List<Card> getCards() {
         List<Card> cards = new ArrayList<>();
         switch (type) {
-            case TWO_SIDED:
+            case TYPE_TWO_SIDED:
                 cards.add(new Card(back, front, id + "-2"));
-            case ONE_SIDED:
+            case TYPE_ONE_SIDED:
                 cards.add(new Card(front, back, id + "-1"));
                 break;
             default:

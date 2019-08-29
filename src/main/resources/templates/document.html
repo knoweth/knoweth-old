@@ -1,4 +1,5 @@
 <?use k:com.github.knoweth.client.components?>
+
 <div class="k-pg-document">
     <std:if condition="document != null">
         <h1>Document #
@@ -26,6 +27,10 @@
                 <std:foreach var="note" in="section.notes" index="noteId">
                     <tr>
                         <td style="width: 50%">
+                            <select html:value="note.type" html:change="note.setType(Integer.parseInt(it))">
+                                <option value="0">One-sided</option>
+                                <option value="1">Two-sided</option>
+                            </select>
                             <div class="k-note card">
                                 <textarea class="k-note__front" html:value="note.front" html:change="note.front"
                                           placeholder="Note Front"></textarea>

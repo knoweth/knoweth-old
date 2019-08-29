@@ -35,7 +35,7 @@ public class DocumentView extends AuthenticatedView {
 
     public void addNote(int sectionId) {
         document.getSections().get(sectionId).getNotes().add(
-                new Note("", "", Note.Type.ONE_SIDED));
+                new Note("", "", Note.TYPE_ONE_SIDED));
     }
 
     public String getSaveMessage() {

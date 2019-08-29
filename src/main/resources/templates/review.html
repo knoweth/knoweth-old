@@ -1,11 +1,24 @@
+<?import com.github.knoweth.common.reviewing.ReviewQuality?>
+
+<!-- on keypress, trigger enter listener -->
 <div>
     <std:if condition="document != null">
-        <div>ID <html:text value="id"/></div>
+        <div>ID
+            <html:text value="id"/>
+        </div>
 
         <div class="container">
             <div class="row">
                 <div class="col-4">
                     <html:text value="remaining"/>
+                    <std:choose>
+                        <std:option when="remaining == 1">
+                            card remaining
+                        </std:option>
+                        <std:otherwise>
+                            cards remaining
+                        </std:otherwise>
+                    </std:choose>
                 </div>
                 <div class="col-8">
                     <std:choose>
@@ -13,12 +26,55 @@
                             <p>You have no cards to review! Congratulations.</p>
                         </std:option>
                         <std:otherwise>
-                            <html:text value="currentCard.front"/>
-                            <html:text value="currentCard.back"/>
+                            <div class="k-review-card" event:mouseup="showBack()">
+                                <div class="k-review-card__front">
+                                    <html:text value="currentCard.front"/>
+                                </div>
+
+                                <std:choose>
+                                    <std:option when="!showingBack">
+
+                                        <div class="k-review-card__help">
+                                            Click to reveal back
+                                        </div>
+                                    </std:option>
+                                    <std:otherwise>
+
+                                        <hr style="width: 100%; background-color: black; height: 1px; border-color : transparent;"/>
+
+
+                                        <div class="k-review-card__back">
+                                            <html:text value="currentCard.back"/>
+                                        </div>
+
+                                        <!-- Note - due to TeaVM limitations this has to be here, inside the card
+                                             otherwise it throws a Java exception -->
+                                        <p class="btn-group" role="group" aria-label="Review buttons">
+                                            <button class="btn btn-danger"
+                                                    event:click="markReviewed(ReviewQuality.AGAIN)">
+                                                Again
+                                            </button>
+                                            <button class="btn btn-warning"
+                                                    event:click="markReviewed(ReviewQuality.HARD)">
+                                                Hard
+                                            </button>
+                                            <button class="btn btn-primary"
+                                                    event:click="markReviewed(ReviewQuality.GOOD)">
+                                                Good
+                                            </button>
+                                            <button class="btn btn-success"
+                                                    event:click="markReviewed(ReviewQuality.EASY)">
+                                                Easy
+                                            </button>
+                                        </p>
+                                    </std:otherwise>
                         </std:otherwise>
                     </std:choose>
                 </div>
+
+                </std:choose>
             </div>
         </div>
-    </std:if>
+</div>
+</std:if>
 </div>

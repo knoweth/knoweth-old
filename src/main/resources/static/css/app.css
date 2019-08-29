@@ -15,3 +15,28 @@
     margin: 1em;
     width: 50%;
 }
+
+.k-review-card {
+    border: 0.1em solid black;
+    padding: 4em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 10px 10px 0px 0px rgba(0,0,0,0.75);
+    margin-right: 10px;
+    margin-bottom: 2em;
+}
+
+.k-review-card__help {
+    margin-top: 1em;
+    color: rgba(0, 0, 0, 0.5);
+    font-style: italic;
+    font-size: 0.85em;
+}
+
+.k-review-card__front {
+}
+
+.k-review-card__back {
+}

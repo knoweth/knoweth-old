@@ -25,4 +25,8 @@ public interface StorageService {
     @PUT
     @Path("docs/{id}")
     void setDocument(@PathParam("id") int id, Document newDoc);
+
+    @DELETE
+    @Path("docs/{id}")
+    void deleteDocument(@PathParam("id") long id);
 }

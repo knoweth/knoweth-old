@@ -2,16 +2,29 @@
     -moz-appearance: none;
     border: 0;
 }
+.k-pg-document .k-edit-controls {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+}
 
 .k-note {
     display: flex;
     flex-flow: row nowrap;
+    margin: 1em 0;
+}
+.k-note__front, .k-note__back {
+    margin: 0 1em;
+    width: 50%;
+    display: block;
+    font-family: monospace;
 }
 .k-note__front {
-    margin: 1em;
+    margin-right: 0;
 }
-.k-note__back {
-    margin: 1em;
+
+.k-note__select {
+    width: 20%;
 }
 
 .k-review-card {

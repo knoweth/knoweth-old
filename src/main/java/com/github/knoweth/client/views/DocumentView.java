@@ -12,6 +12,7 @@ public class DocumentView extends AuthenticatedView {
     private Document document;
     private int id;
     private String saveMessage;
+    private boolean inPreview;
 
     public DocumentView(int id) {
         this.id = id;
@@ -56,5 +57,13 @@ public class DocumentView extends AuthenticatedView {
 
     public void removeNote(int sectionId, int noteId) {
         document.getSections().get(sectionId).getNotes().remove(noteId);
+    }
+
+    public boolean getInPreview() {
+        return inPreview;
+    }
+
+    public void togglePreview() {
+        inPreview = !inPreview;
     }
 }

@@ -5,7 +5,7 @@
 <div class="card-columns">
     <std:if condition="documents != null">
         <std:foreach var="document" in="documents">
-            <div class="card m-3" style="width: 18rem;">
+            <div class="card m-3" style="max-width: 18rem">
                 <div class="card-body">
                     <h5 class="card-title">
                         <html:text value="document.title"/>
@@ -22,6 +22,7 @@
                 <div class="card-body">
                     <a html:link="it.accept('/documents/' + document.id)" class="card-link">Edit</a>
                     <a html:link="it.accept('/review/' + document.id)" class="card-link">Review</a>
+                    <button class="card-link p-0 btn btn-link" event:click="onDeleteDocument(document.id)">Remove</button>
                 </div>
             </div>
         </std:foreach>

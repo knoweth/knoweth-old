@@ -12,60 +12,66 @@
             <html:text value="document.author"/>
         </p>
 
+        <p>
+            <button class="btn btn-success" event:click="save()"><i class="fas fa-save"></i> Save</button>
+        </p>
+
+        <div class="k-edit-controls">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="k-edit-control"
+                       html:change="togglePreview()">
+                <label class="custom-control-label" for="k-edit-control">
+                    Preview mode
+                </label>
+            </div>
+        </div>
+
         <std:foreach var="section" index="sectionId" in="document.sections">
+            <button class="btn btn-danger float-right" title="Delete Section"><i class="fas fa-trash"></i><span
+                    class="sr-only">Delete Section</span></button>
+
             <h2><input html:change="section.title" html:value="section.title" class="k-input--no-styling"></h2>
 
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Edit</th>
-                    <th>Preview</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <std:foreach var="note" in="section.notes" index="noteId">
-                    <tr>
-                        <td style="width: 50%">
-                            <select html:value="note.type" html:change="note.setType(Integer.parseInt(it))">
-                                <option value="0">One-sided</option>
-                                <option value="1">Two-sided</option>
+            <std:foreach var="note" in="section.notes" index="noteId">
+                <std:choose>
+                    <std:option when="inPreview">
+                        <div class="k-note">
+                            <div class="k-note__front">
+                                <k:markdown content="note.front"/>
+                            </div>
+                            <div class="k-note__back">
+                                <k:markdown content="note.back"/>
+                            </div>
+                        </div>
+                    </std:option>
+                    <std:otherwise>
+                        <div class="k-note">
+                            <select class="k-note__select" html:value="note.type"
+                                    html:change="note.setType(Integer.parseInt(it))">
+                                <option value="0">Single</option>
+                                <option value="1">Double</option>
                             </select>
-                            <div class="k-note card">
-                                <textarea class="k-note__front" html:value="note.front" html:change="note.front"
-                                          placeholder="Note Front"></textarea>
-                                <textarea class="k-note__back" html:value="note.back" html:change="note.back"
-                                          placeholder="Note Back"></textarea>
-                                <div class="card-footer">
-                                    <button class="btn btn-danger" event:click="removeNote(sectionId, noteId)">
-                                        <i class="fas fa-trash"></i> Remove
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td style="width: 50%">
-                            <div class="k-note card">
-                                <div class="k-note__front">
-                                    <k:markdown content="note.front"/>
-                                </div>
-                                <div class="k-note__back">
-                                    <k:markdown content="note.back"/>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </std:foreach>
-                </tbody>
-            </table>
+                            <textarea class="k-note__front" html:value="note.front" html:change="note.front"
+                                      placeholder="Note Front"></textarea>
+                            <textarea class="k-note__back" html:value="note.back" html:change="note.back"
+                                      placeholder="Note Back"></textarea>
+                            <button class="btn btn-danger" event:click="removeNote(sectionId, noteId)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </std:otherwise>
+                </std:choose>
+            </std:foreach>
 
             <p>
-                <button class="btn btn-primary" event:click="addNote(sectionId)">Add Note</button>
+                <button class="btn btn-primary" event:click="addNote(sectionId)"><i class="fas fa-plus"></i> Note
+                </button>
             </p>
         </std:foreach>
 
-        <button class="btn btn-primary" event:click="addSection()">Add Section</button>
-
-        <button class="btn btn-success" event:click="save()">Save</button>
+        <p>
+            <button class="btn btn-primary" event:click="addSection()"><i class="fas fa-plus"></i> Section</button>
+        </p>
 
         <std:if condition="saveMessage != null">
             <p>

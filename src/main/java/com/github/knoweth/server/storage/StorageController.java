@@ -42,7 +42,7 @@ public class StorageController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping("/docs")
+    @DeleteMapping("/docs/{id}")
     public void deleteDocument(@PathVariable long id) {
         documentRepository.deleteById(id);
     }

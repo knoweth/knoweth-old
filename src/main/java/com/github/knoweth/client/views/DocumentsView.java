@@ -21,7 +21,7 @@ import java.util.List;
 public class DocumentsView extends AuthenticatedView {
     private List<Document> documents;
     private UserCache userCache;
-    public String newDocumentName;
+    private String newDocumentName;
 
     public DocumentsView(UserCache userCache) {
         this.userCache = userCache;
@@ -50,6 +50,21 @@ public class DocumentsView extends AuthenticatedView {
             xhr.setRequestHeader("Content-Type", "application/json");
 
             xhr.send(JSON.serialize(doc).stringify());
+        });
+    }
+
+    public String getNewDocumentName() {
+        return newDocumentName;
+    }
+
+    public void setNewDocumentName(String newDocumentName) {
+        this.newDocumentName = newDocumentName;
+    }
+
+    public void onDeleteDocument(long id) {
+        new BackgroundWorker().run(() -> {
+            Services.STORAGE.deleteDocument(id);
+            documents = Services.STORAGE.getDocuments(); // Reload documents
         });
     }
 }

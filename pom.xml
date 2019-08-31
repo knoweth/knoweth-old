@@ -176,9 +176,6 @@
                 </executions>
             </plugin>
         </plugins>
-        <resources>
-
-        </resources>
     </build>
 
 </project>

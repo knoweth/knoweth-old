@@ -4,15 +4,21 @@ import com.github.knoweth.client.services.Services;
 import com.github.knoweth.common.data.Card;
 import com.github.knoweth.common.data.Document;
 import com.github.knoweth.common.reviewing.AnkiAlgorithm;
+import com.github.knoweth.common.reviewing.ReviewAlgorithm;
 import com.github.knoweth.common.reviewing.ReviewQuality;
 import com.github.knoweth.common.reviewing.ReviewTracker;
+import org.teavm.flavour.json.JSON;
+import org.teavm.flavour.json.tree.Node;
 import org.teavm.flavour.templates.BindTemplate;
 import org.teavm.flavour.templates.Templates;
 import org.teavm.flavour.widgets.BackgroundWorker;
+import org.teavm.jso.browser.Storage;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.KeyboardEvent;
 import org.threeten.bp.Duration;
+
+import java.util.Map;
 
 /**
  * State for the reviewing view.
@@ -31,7 +37,17 @@ public class ReviewView extends AuthenticatedView {
         new BackgroundWorker().run(() -> {
             // Fetch the document and initialize the review tracker
             document = Services.STORAGE.getDocument(id);
-            tracker = new ReviewTracker(new AnkiAlgorithm());
+
+            String savedMetadata = Storage.getLocalStorage().getItem("review-tracker");
+            if (savedMetadata != null) {
+                try {
+                    tracker = JSON.deserialize(Node.parse(savedMetadata), ReviewTracker.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                tracker = new ReviewTracker(new AnkiAlgorithm());
+            }
             tracker.importCards(document);
             nextCard();
 
@@ -75,6 +91,12 @@ public class ReviewView extends AuthenticatedView {
         showingBack = false;
         currentCard = tracker.getNextReview();
         remaining = tracker.getRemainingReviews();
+        System.out.println(tracker.getCardIds().entrySet());
+        try {
+            Window.current().getLocalStorage().setItem("review-tracker", JSON.serialize(tracker).stringify());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void markReviewed(ReviewQuality quality) {

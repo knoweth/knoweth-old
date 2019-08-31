@@ -4,8 +4,10 @@ import com.github.knoweth.common.data.Card;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.teavm.flavour.json.JsonPersistable;
 import org.threeten.bp.Duration;
 import org.threeten.bp.temporal.ChronoUnit;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +17,7 @@ import java.util.Map;
  *
  * @author Kevin Liu
  */
+@JsonPersistable
 public class AnkiAlgorithm implements ReviewAlgorithm {
     // TODO Document
     // TODO Anki can configure these - do we want to?
@@ -29,33 +32,40 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
      */
     private static final double EASY_BONUS = 1.30;
 
-    private Map<Card, Double> easeFactors = new HashMap<>();
-    private Map<Card, Integer> repetitions = new HashMap<>();
-    private Map<Card, LearningSteps> learningSteps = new HashMap<>();
-    private Map<Card, Duration> intervals = new HashMap<>();
+    private Map<String, Double> easeFactors = new HashMap<>();
+    private Map<String, Integer> repetitions = new HashMap<>();
+    private Map<String, LearningSteps> learningSteps = new HashMap<>();
+    /**
+     * Map of millisecond-intervals
+     */
+    private Map<String, Long> intervals = new HashMap<>();
 
     private static Duration fractionalMultiplyDuration(Duration duration, double multiplier) {
         return Duration.ofSeconds(Math.round(duration.getSeconds() * multiplier));
     }
 
     private void changeEaseFactor(Card card, double delta) {
-        easeFactors.put(card, Math.max(easeFactors.getOrDefault(card, DEFAULT_EASE_FACTOR) + delta, MIN_EASE_FACTOR));
+        easeFactors.put(card.getId(), Math.max(easeFactors.getOrDefault(card.getId(), DEFAULT_EASE_FACTOR) + delta, MIN_EASE_FACTOR));
     }
 
     private void multiplyInterval(Card card, double multiplier) {
-        intervals.put(card,
-                Duration.ofSeconds(Math.round(
-                        intervals.getOrDefault(card, INTERVAL_REP_ONE).getSeconds() * multiplier)));
+        intervals.put(card.getId(),
+                (Math.round(
+                        intervals.getOrDefault(card.getId(), INTERVAL_REP_ONE.toMillis()) * multiplier)));
     }
 
     private int addRepetition(Card card) {
-        int reps = repetitions.getOrDefault(card, 0) + 1;
-        repetitions.put(card, reps);
+        int reps = repetitions.getOrDefault(card.getId(), 0) + 1;
+        repetitions.put(card.getId(), reps);
         return reps;
     }
 
+    private static LearningSteps nextStep(LearningSteps step) {
+        return LearningSteps.values()[step.ordinal() + 1];
+    }
+
     private void answerLearningCard(Card card, ReviewQuality quality) {
-        LearningSteps step = learningSteps.getOrDefault(card, LearningSteps.NEW);
+        LearningSteps step = learningSteps.getOrDefault(card.getId(), LearningSteps.NEW);
         switch (quality) {
             case EASY:
                 // Immediate graduation
@@ -65,7 +75,7 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
                 break;
             case GOOD:
                 // Move one step toward graduation
-                step = step.nextStep();
+                step = nextStep(step);
                 if (step == LearningSteps.GRADUATED) {
                     rescheduleGraduatedCard(card, false);
                 }
@@ -75,12 +85,12 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
                 // so for our purposes we will just consider it an AGAIN
             case AGAIN:
                 step = LearningSteps.LEARNING_ONE;
-                intervals.put(card, Duration.ofDays(1)); // reset interval to 1 day
+                intervals.put(card.getId(), Duration.ofDays(1).toMillis()); // reset interval to 1 day
                 break;
             default:
                 throw new IllegalStateException("Unknown review quality " + quality);
         }
-        learningSteps.put(card, step);
+        learningSteps.put(card.getId(), step);
     }
 
     /**
@@ -92,8 +102,8 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
      * @return the interval until the next review
      */
     private Duration nextReviewInterval(Card card, ReviewQuality quality, int daysOverdue) {
-        double easeFactor = easeFactors.get(card);
-        Duration currentInterval = intervals.get(card);
+        double easeFactor = easeFactors.get(card.getId());
+        Duration currentInterval = Duration.ofMillis(intervals.get(card.getId()));
         // (interval + delay / 4) * 1.2
         Duration hardInterval = constrainedIntervalAfter(currentInterval
                 .plus(Duration.ofDays(daysOverdue).dividedBy(4))
@@ -160,7 +170,7 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
                 break;
         }
 
-        intervals.put(card, nextReviewInterval(card, quality, daysOverdue));
+        intervals.put(card.getId(), nextReviewInterval(card, quality, daysOverdue).toMillis());
     }
 
     /**
@@ -171,8 +181,8 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
      *                       clicking {@link ReviewQuality#EASY} on it.
      */
     private void rescheduleGraduatedCard(Card card, boolean graduatedEarly) {
-        intervals.put(card, getGraduatingInterval(graduatedEarly));
-        easeFactors.put(card, DEFAULT_EASE_FACTOR);
+        intervals.put(card.getId(), getGraduatingInterval(graduatedEarly).toMillis());
+        easeFactors.put(card.getId(), DEFAULT_EASE_FACTOR);
     }
 
     private Duration getGraduatingInterval(boolean graduatedEarly) {
@@ -196,36 +206,36 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
         // Set interval to max(minimum interval, card_interval * lapse_multiplier)
         // Which is hardcoded at 1 day (which is the default minimum interval)
         // since lapse_multiplier is also 0 by default
-        intervals.put(card, Duration.ofDays(1));
+        intervals.put(card.getId(), Duration.ofDays(1).toMillis());
         changeEaseFactor(card, -0.2);
-        learningSteps.put(card, LearningSteps.LEARNING_TWO);
+        learningSteps.put(card.getId(), LearningSteps.LEARNING_TWO);
     }
 
     @Override
     public Duration getNextReview(Card card, ReviewQuality quality, int daysOverdue) {
-        learningSteps.putIfAbsent(card, LearningSteps.NEW);
-        if (learningSteps.get(card) == LearningSteps.NEW) {
+        learningSteps.putIfAbsent(card.getId(), LearningSteps.NEW);
+        if (learningSteps.get(card.getId()) == LearningSteps.NEW) {
             // Move to learning step one
-            learningSteps.put(card, LearningSteps.LEARNING_ONE);
+            learningSteps.put(card.getId(), LearningSteps.LEARNING_ONE);
         }
 
-        if (learningSteps.get(card) == LearningSteps.LEARNING_ONE ||
-                learningSteps.get(card) == LearningSteps.LEARNING_TWO) {
+        if (learningSteps.get(card.getId()) == LearningSteps.LEARNING_ONE ||
+                learningSteps.get(card.getId()) == LearningSteps.LEARNING_TWO) {
             answerLearningCard(card, quality);
-        } else if (learningSteps.get(card) == LearningSteps.GRADUATED) {
+        } else if (learningSteps.get(card.getId()) == LearningSteps.GRADUATED) {
             answerReviewCard(card, quality, daysOverdue);
         } else {
             throw new IllegalStateException("Invalid learning step");
         }
 
-        switch (learningSteps.get(card)) {
+        switch (learningSteps.get(card.getId())) {
             case LEARNING_ONE:
                 return INTERVAL_LEARNING_ONE;
             case LEARNING_TWO:
                 return INTERVAL_LEARNING_TWO;
             case GRADUATED:
                 // TODO truncate to days
-                return intervals.get(card);
+                return Duration.ofMillis(intervals.get(card.getId()));
             case NEW:
             default:
                 throw new IllegalStateException("Invalid learning step");
@@ -233,21 +243,31 @@ public class AnkiAlgorithm implements ReviewAlgorithm {
     }
 
     public double getEaseFactor(Card card) {
-        return easeFactors.getOrDefault(card, DEFAULT_EASE_FACTOR);
+        return easeFactors.getOrDefault(card.getId(), DEFAULT_EASE_FACTOR);
+    }
+
+    // Getters for TeaVM serialization ONLY
+
+    public Map<String, Double> getEaseFactors() {
+        return easeFactors;
+    }
+
+    public Map<String, Long> getIntervals() {
+        return intervals;
+    }
+
+    public Map<String, Integer> getRepetitions() {
+        return repetitions;
+    }
+
+    public Map<String, LearningSteps> getLearningSteps() {
+        return learningSteps;
     }
 
     // TODO randomization of interval as anki does in fuzzedIvl
 
+    @JsonPersistable
     private enum LearningSteps {
-        NEW, LEARNING_ONE, LEARNING_TWO, GRADUATED {
-            @Override
-            public LearningSteps nextStep() {
-                throw new IllegalStateException("Cannot get the next step - card has already graduated.");
-            }
-        };
-
-        public LearningSteps nextStep() {
-            return values()[ordinal() + 1];
-        }
+        NEW, LEARNING_ONE, LEARNING_TWO, GRADUATED
     }
 }

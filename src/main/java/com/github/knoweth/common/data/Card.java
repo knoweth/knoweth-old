@@ -1,5 +1,7 @@
 package com.github.knoweth.common.data;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.teavm.flavour.json.JsonPersistable;
 
 import java.util.Objects;
@@ -14,7 +16,10 @@ public class Card {
     private String back;
     private String id;
 
-    public Card(String front, String back, String id) {
+    @JsonCreator
+    public Card(@JsonProperty("front") String front,
+                @JsonProperty("back") String back,
+                @JsonProperty("id") String id) {
         this.front = front;
         this.back = back;
         this.id = id;

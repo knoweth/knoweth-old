@@ -1,13 +1,14 @@
 package com.github.knoweth.common.reviewing;
 
+import com.fasterxml.jackson.annotation.*;
 import com.github.knoweth.client.util.DateUtil;
 import com.github.knoweth.common.data.Card;
 import com.github.knoweth.common.data.Document;
 import com.github.knoweth.common.data.Note;
 import com.github.knoweth.common.data.Section;
 
+import org.teavm.flavour.json.JsonPersistable;
 import org.threeten.bp.Duration;
-import org.threeten.bp.LocalDate;
 
 import java.util.*;
 
@@ -16,16 +17,37 @@ import java.util.*;
  *
  * @author Kevin Liu
  */
+@JsonPersistable
 public class ReviewTracker {
     // TODO optimize for < O(n) search for current reviews
-    private final Map<Card, Metadata> metadata = new HashMap<>();
-    private final ReviewAlgorithm reviewAlgorithm;
+    private Map<String, Metadata> metadata;
+    private Map<String, Card> cardIds = new HashMap<>();
+    // TODO Use the generic ReviewAlgorithm interface
+    // Currently breaks TeaVM deserialization, though
+    private AnkiAlgorithm reviewAlgorithm;
+
+    public ReviewTracker() {
+    }
 
     /**
-     * Creates a new ReviewTracker based on a given document, with all cards unreviewed
+     * Creates a new ReviewTracker, with all cards unreviewed
+     *
+     * @param reviewAlgorithm the reviewing algorithm to use
      */
-    public ReviewTracker(ReviewAlgorithm reviewAlgorithm) {
+    public ReviewTracker(AnkiAlgorithm reviewAlgorithm) {
         this.reviewAlgorithm = reviewAlgorithm;
+        this.metadata = new HashMap<>();
+    }
+
+    /**
+     * Creates a new ReviewTracker with preloaded metadata
+     *
+     * @param reviewAlgorithm the reviewing algorithm to use
+     * @param metadata        the metadata of previously-reviewed cards
+     */
+    public ReviewTracker(AnkiAlgorithm reviewAlgorithm, Map<String, Metadata> metadata) {
+        this.reviewAlgorithm = reviewAlgorithm;
+        this.metadata = new HashMap<>(metadata);
     }
 
     /**
@@ -38,7 +60,8 @@ public class ReviewTracker {
         for (Section section : doc.getSections()) {
             for (Note note : section.getNotes()) {
                 for (Card card : note.getCards()) {
-                    metadata.putIfAbsent(card, new Metadata(reviewDate));
+                    metadata.putIfAbsent(card.getId(), new Metadata(reviewDate));
+                    cardIds.put(card.getId(), card);
                 }
             }
         }
@@ -47,35 +70,37 @@ public class ReviewTracker {
     /**
      * Track a review of a given Card.
      *
-     * @param card the card reviewed
+     * @param card     the card reviewed
      * @param duration the duration of the review
-     * @param quality what the user reported for their card recall
+     * @param quality  what the user reported for their card recall
      */
     public void markReviewed(Card card, Duration duration, ReviewQuality quality) {
         // Get the next review interval
         Duration reviewInterval = reviewAlgorithm.getNextReview(card, quality, 0); // TODO take into account overdue days
 
         // Update metadata
-        Session reviewSession = new Session(new Date(), duration, quality);
-        metadata.putIfAbsent(card, new Metadata(DateUtil.addDuration(new Date(), reviewInterval)));
-        metadata.get(card).reviewDate = DateUtil.addDuration(new Date(), reviewInterval);
-        metadata.get(card).pastReviews.add(reviewSession);
+        Session reviewSession = new Session(new Date(), duration.toMillis(), quality);
+        metadata.putIfAbsent(card.getId(), new Metadata(DateUtil.addDuration(new Date(), reviewInterval)));
+        metadata.get(card.getId()).setReviewDate(DateUtil.addDuration(new Date(), reviewInterval));
+        metadata.get(card.getId()).getPastReviews().add(reviewSession);
     }
 
+    @JsonIgnore
     public Card getNextReview() {
-        for (Map.Entry<Card, Metadata> entry : metadata.entrySet()) {
-            Date reviewDate = entry.getValue().reviewDate;
+        for (Map.Entry<String, Metadata> entry : metadata.entrySet()) {
+            Date reviewDate = entry.getValue().getReviewDate();
             if (DateUtil.sameDay(reviewDate, new Date()) || reviewDate.getTime() < new Date().getTime()) {
-                return entry.getKey();
+                return cardIds.get(entry.getKey());
             }
         }
         return null; // no more entries to review
     }
 
+    @JsonIgnore
     public int getRemainingReviews() {
         int count = 0;
-        for (Map.Entry<Card, Metadata> entry : metadata.entrySet()) {
-            Date reviewDate = entry.getValue().reviewDate;
+        for (Map.Entry<String, Metadata> entry : metadata.entrySet()) {
+            Date reviewDate = entry.getValue().getReviewDate();
             if (DateUtil.sameDay(reviewDate, new Date()) || reviewDate.getTime() < new Date().getTime()) {
                 count++;
             }
@@ -84,51 +109,31 @@ public class ReviewTracker {
     }
 
     public Date getNextReviewDate(Card card) {
-        if (!metadata.containsKey(card)) {
+        if (!metadata.containsKey(card.getId())) {
             throw new IllegalArgumentException("Card " + card + " has not yet been tracked.");
         }
-        return metadata.get(card).reviewDate;
+        return metadata.get(card.getId()).getReviewDate();
     }
 
     public List<Session> getPastReviews(Card card) {
-        if (!metadata.containsKey(card)) {
+        if (!metadata.containsKey(card.getId())) {
             return new ArrayList<>();
         }
 
         // Defensive copy
-        return new ArrayList<>(metadata.get(card).pastReviews);
+        return new ArrayList<>(metadata.get(card.getId()).getPastReviews());
     }
 
-    private class Metadata {
-        private final List<Session> pastReviews = new ArrayList<>();
-        private Date reviewDate;
-
-        Metadata(Date reviewDate) {
-            this.reviewDate = reviewDate;
-        }
+    public Map<String, Card> getCardIds() {
+        return cardIds;
     }
 
-    public class Session {
-        private final Date reviewStartDateTime;
-        private final Duration duration;
-        private final ReviewQuality quality;
-
-        private Session(Date reviewStartDateTime, Duration duration, ReviewQuality quality) {
-            this.reviewStartDateTime = reviewStartDateTime;
-            this.duration = duration;
-            this.quality = quality;
-        }
-
-        public Date getReviewStartDateTime() {
-            return reviewStartDateTime;
-        }
-
-        public Duration getDuration() {
-            return duration;
-        }
-
-        public ReviewQuality getQuality() {
-            return quality;
-        }
+    public Map<String, Metadata> getMetadata() {
+        return metadata;
     }
+
+    public ReviewAlgorithm getReviewAlgorithm() {
+        return reviewAlgorithm;
+    }
+
 }

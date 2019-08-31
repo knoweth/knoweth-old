@@ -24,7 +24,7 @@ class AnkiAlgorithmTest {
         nextReview = r.getNextReview(newCard, ReviewQuality.GOOD, 0);
         assertEquals(Duration.ofDays(3), nextReview);
         nextReview = r.getNextReview(newCard, ReviewQuality.GOOD, 0);
-        assertEquals(Duration.ofDays(7), nextReview);
+        assertEquals(Duration.ofHours(180), nextReview);
         // Ease factor should be unchanged after repeated Goods
         assertEquals(AnkiAlgorithm.DEFAULT_EASE_FACTOR, r.getEaseFactor(newCard));
         // Randomization makes tests unreliable beyond this point

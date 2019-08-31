@@ -7,7 +7,9 @@ import org.teavm.flavour.json.JsonPersistable;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @JsonPersistable
@@ -19,6 +21,11 @@ public class Document {
     private String author;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
+    /**
+     * A set of shared users on this document, specified by their username.
+     */
+    @ElementCollection
+    private Set<String> sharedUsers = new HashSet<>();
 
     protected Document() {}
 
@@ -57,5 +64,21 @@ public class Document {
         return "Document{" +
                 "id=" + id +
                 ", author=" + author + "]";
+    }
+
+    /**
+     * @return a set of the usernames shared on this document
+     */
+    public Set<String> getSharedUsers() {
+        // Defensive copy
+        return new HashSet<>(sharedUsers);
+    }
+
+    public void addSharedUser(String username) {
+        sharedUsers.add(username);
+    }
+
+    public void removeSharedUser(String username) {
+        sharedUsers.remove(username);
     }
 }

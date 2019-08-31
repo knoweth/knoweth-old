@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.ArrayList;
 
+/**
+ * The main Spring application. Run this to run the backend server.
+ */
 @SpringBootApplication
 // Scan all JPA entities in the data package (that of Document)
 @EntityScan(basePackages = "com.github.knoweth.*")
@@ -22,12 +25,5 @@ public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-    }
-
-    @Bean
-    public CommandLineRunner demo(DocumentRepository repository, UserRepository userRepository) {
-        return (args) -> {
-            repository.save(new Document("test", "test", new ArrayList<>()));
-        };
     }
 }

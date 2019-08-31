@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
+/**
+ * REST controller to login, register, and view user status.
+ */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -22,6 +24,9 @@ public class UserController {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
+    /**
+     * Register a new user.
+     */
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response register(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
         if (userRepository.findByUsername(user.getUsername()) != null) {
@@ -35,6 +40,9 @@ public class UserController {
         }
     }
 
+    /**
+     * Login as a user.
+     */
     @GetMapping("/login")
     public String login(Model model, String error, String logout) {
         if (error != null)
@@ -46,6 +54,9 @@ public class UserController {
         return "login";
     }
 
+    /**
+     * Dummy endpoint used by frontend to check if user is logged in
+     */
     @GetMapping(value = {"/status"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public User status() {
         return UserUtils.getUser();

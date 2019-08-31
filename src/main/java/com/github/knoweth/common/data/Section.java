@@ -8,6 +8,9 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A section of a document, with a title and contents (notes).
+ */
 @Entity
 @JsonPersistable
 public class Section {

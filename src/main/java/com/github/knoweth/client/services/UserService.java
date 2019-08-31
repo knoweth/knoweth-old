@@ -10,24 +10,6 @@ import javax.ws.rs.*;
 @Path("")
 @Resource
 public interface UserService {
-    @JsonPersistable
-    class RegistrationBody {
-        public RegistrationBody(String username, String password) {
-            this.username = username;
-            this.password = password;
-        }
-
-        String username;
-        String password;
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-    }
 
     @JsonPersistable
     class LoginBody {
@@ -55,7 +37,7 @@ public interface UserService {
 
     @Path("api/users/register")
     @POST
-    Response register(RegistrationBody body);
+    Response register(User body);
 
     @Path("api/users/status")
     @GET

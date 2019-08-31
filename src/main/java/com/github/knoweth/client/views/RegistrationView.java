@@ -3,6 +3,7 @@ package com.github.knoweth.client.views;
 import com.github.knoweth.client.services.Services;
 import com.github.knoweth.client.services.UserService;
 import com.github.knoweth.common.Response;
+import com.github.knoweth.server.auth.User;
 import org.teavm.flavour.templates.BindTemplate;
 import org.teavm.flavour.templates.Templates;
 import org.teavm.flavour.widgets.BackgroundWorker;
@@ -14,10 +15,11 @@ import java.util.TimerTask;
 @BindTemplate("templates/registration.html")
 public class RegistrationView {
     public boolean isEnabled = true;
-    public String message = null;
-    public String error = null;
-    public String username = null;
-    public String password = null;
+    public String message;
+    public String error;
+    public String username;
+    public String email;
+    public String password;
 
     public void onSubmit() {
         isEnabled = false;
@@ -25,7 +27,7 @@ public class RegistrationView {
         BackgroundWorker worker = new BackgroundWorker();
         worker.run(() -> {
             try {
-                Response res = Services.USER.register(new UserService.RegistrationBody(username, password));
+                Response res = Services.USER.register(new User(username, email, password));
                 System.out.println(res);
                 if (res.getOk()) {
                     message = "Registration complete. Redirecting to login page...";

@@ -79,6 +79,9 @@ public class Note {
         this.type = type;
     }
 
+    /**
+     * @return the cards generated from this note
+     */
     @Transient
     @JsonIgnore
     public List<Card> getCards() {

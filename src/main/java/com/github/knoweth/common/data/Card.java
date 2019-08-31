@@ -5,7 +5,9 @@ import org.teavm.flavour.json.JsonPersistable;
 import java.util.Objects;
 import java.util.UUID;
 
-// TODO should we add a Reviewable interface that Card implements?
+/**
+ * An atomized reviewable item. Has a front and back.
+ */
 @JsonPersistable
 public class Card {
     private String front;

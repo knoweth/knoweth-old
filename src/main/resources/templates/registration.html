@@ -7,12 +7,17 @@
         <div class="form-group">
             <label for="email">Email Address</label>
             <input id="email" type="email" class="form-control" placeholder="test@example.com" html:enabled="isEnabled"
+                   html:change="email" html:value="email" required>
+        </div>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input id="username" type="text" class="form-control" html:enabled="isEnabled" required
                    html:change="username" html:value="username">
         </div>
         <div class="form-group">
             <label for="password">Password</label>
             <input id="password" type="password" class="form-control" html:enabled="isEnabled" html:change="password"
-                   html:value="password">
+                   html:value="password" required>
         </div>
         <p>
             <button type="submit" class="btn btn-primary" html:enabled="isEnabled">Submit</button>

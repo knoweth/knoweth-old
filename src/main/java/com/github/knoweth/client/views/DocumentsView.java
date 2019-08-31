@@ -17,6 +17,9 @@ import org.teavm.jso.browser.Window;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * List of all documents that the user can access.
+ */
 @BindTemplate("templates/documents.html")
 public class DocumentsView extends AuthenticatedView {
     private List<Document> documents;
@@ -28,10 +31,16 @@ public class DocumentsView extends AuthenticatedView {
         new BackgroundWorker().run(() -> documents = Services.STORAGE.getDocuments());
     }
 
+    /**
+     * @return the current list of the user's documents
+     */
     public List<Document> getDocuments() {
         return documents;
     }
 
+    /**
+     * Create a new document with the given name.
+     */
     public void onCreateDocument() {
         new BackgroundWorker().run(() -> {
             // Get current user to make author
@@ -53,14 +62,24 @@ public class DocumentsView extends AuthenticatedView {
         });
     }
 
+    /**
+     * @return the name, if any, of the new document the user is making
+     */
     public String getNewDocumentName() {
         return newDocumentName;
     }
 
+    /**
+     * Set the name of the new document the user is making.
+     */
     public void setNewDocumentName(String newDocumentName) {
         this.newDocumentName = newDocumentName;
     }
 
+    /**
+     * Delete a document that the user owns.
+     * @param id the document to delete
+     */
     public void onDeleteDocument(long id) {
         new BackgroundWorker().run(() -> {
             Services.STORAGE.deleteDocument(id);

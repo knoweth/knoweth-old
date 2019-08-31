@@ -12,9 +12,40 @@
             <html:text value="document.author"/>
         </p>
 
-        <p>
-            <button class="btn btn-success" event:click="save()"><i class="fas fa-save"></i> Save</button>
-        </p>
+        <h2>Sharing</h2>
+
+        <std:choose>
+            <std:option when="document.sharedUsers.size() != 0">
+                <p>Sharing: shared with the following users:</p>
+                <ul>
+                    <std:foreach var="user" in="document.sharedUsers">
+                        <li>
+                            <html:text value="user"/>
+
+                            <button class="btn btn-danger float-right" title="Delete Section"
+                                    event:click="unshare(user)"><i class="fas fa-trash"></i><span
+                                    class="sr-only">Unshare</span></button>
+                        </li>
+                    </std:foreach>
+                </ul>
+            </std:option>
+            <std:otherwise>
+                <p>Sharing: private (only you can access)</p>
+            </std:otherwise>
+        </std:choose>
+
+        <form class="form-inline mb-2" event:submit="addNewUser()">
+            <label class="sr-only" for="addSharedUser">New User</label>
+            <input class="form-control mr-2" id="addSharedUser" placeholder="New User" html:value="newUser"
+                   html:change="newUser" required>
+
+            <button type="submit" class="btn btn-primary">Share</button>
+        </form>
+
+        <h2>
+            <button class="btn btn-success float-right" event:click="save()"><i class="fas fa-save"></i> Save</button>
+            Notes
+        </h2>
 
         <div class="k-edit-controls">
             <div class="custom-control custom-switch">

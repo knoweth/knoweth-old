@@ -14,6 +14,9 @@ import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.KeyboardEvent;
 import org.threeten.bp.Duration;
 
+/**
+ * State for the reviewing view.
+ */
 @BindTemplate("templates/review.html")
 public class ReviewView extends AuthenticatedView {
     private int id;

@@ -85,6 +85,9 @@ public class ReviewTracker {
         metadata.get(card.getId()).getPastReviews().add(reviewSession);
     }
 
+    /**
+     * @return the next card in the review queue
+     */
     @JsonIgnore
     public Card getNextReview() {
         for (Map.Entry<String, Metadata> entry : metadata.entrySet()) {
@@ -96,6 +99,9 @@ public class ReviewTracker {
         return null; // no more entries to review
     }
 
+    /**
+     * @return the number of remaining reviews in the queue
+     */
     @JsonIgnore
     public int getRemainingReviews() {
         int count = 0;
@@ -108,6 +114,11 @@ public class ReviewTracker {
         return count;
     }
 
+    /**
+     * Get the next time a given card will be reviewed.
+     * @param card the card to query
+     * @return the review date
+     */
     public Date getNextReviewDate(Card card) {
         if (!metadata.containsKey(card.getId())) {
             throw new IllegalArgumentException("Card " + card + " has not yet been tracked.");
@@ -115,6 +126,12 @@ public class ReviewTracker {
         return metadata.get(card.getId()).getReviewDate();
     }
 
+    /**
+     * Get a list of past review sessions for a given card.
+     *
+     * @param card the card to query
+     * @return a list of past reviews
+     */
     public List<Session> getPastReviews(Card card) {
         if (!metadata.containsKey(card.getId())) {
             return new ArrayList<>();
@@ -123,6 +140,9 @@ public class ReviewTracker {
         // Defensive copy
         return new ArrayList<>(metadata.get(card.getId()).getPastReviews());
     }
+
+    // The following getters are for TeaVM JSON serialization purposes ONLY.
+    // Do not use them as a normal user.
 
     public Map<String, Card> getCardIds() {
         return cardIds;

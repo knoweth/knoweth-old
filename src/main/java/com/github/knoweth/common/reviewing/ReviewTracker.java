@@ -56,15 +56,19 @@ public class ReviewTracker {
      * Cards already being tracked by this Tracker will not have their metadata overwritten.
      */
     public void importCards(Document doc) {
-        Date reviewDate = new Date();
         for (Section section : doc.getSections()) {
             for (Note note : section.getNotes()) {
                 for (Card card : note.getCards()) {
-                    metadata.putIfAbsent(card.getId(), new Metadata(reviewDate));
-                    cardIds.put(card.getId(), card);
+                    importCard(card);
                 }
             }
         }
+    }
+
+    public void importCard(Card card) {
+        Date reviewDate = new Date();
+        metadata.putIfAbsent(card.getId(), new Metadata(reviewDate));
+        cardIds.put(card.getId(), card);
     }
 
     /**

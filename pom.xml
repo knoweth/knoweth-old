@@ -162,15 +162,12 @@
                             compile
                         </phase>
                         <configuration>
-                            <targetDirectory>${project.build.directory}/generated/js/teavm</targetDirectory>
+                            <targetDirectory>${project.build.directory}/classes/static/js/teavm</targetDirectory>
                             <mainClass>com.github.knoweth.client.Client</mainClass>
-                            <minifying>false</minifying>
-                            <!--                            <debugInformationGenerated>true</debugInformationGenerated>-->
+                            <minifying>true</minifying>
                             <sourceMapsGenerated>true</sourceMapsGenerated>
                             <sourceFilesCopied>true</sourceFilesCopied>
-                            <!--                            <optimizationLevel>ADVANCED</optimizationLevel>-->
-                            <!--                            <incremental>false</incremental>-->
-                            <!--                            <optimizationLevel>SIMPLE</optimizationLevel>-->
+                            <optimizationLevel>ADVANCED</optimizationLevel>
                         </configuration>
                     </execution>
                 </executions>

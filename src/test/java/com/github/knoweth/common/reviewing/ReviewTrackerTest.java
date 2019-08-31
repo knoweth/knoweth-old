@@ -33,9 +33,10 @@ public class ReviewTrackerTest {
         ReviewTracker t = new ReviewTracker(new AnkiAlgorithm());
         Card c = TestUtil.newCard();
         t.markReviewed(c, Duration.ZERO, ReviewQuality.GOOD);
-        List<ReviewTracker.Session> reviews = t.getPastReviews(c);
+        t.importCard(c);
+        List<Session> reviews = t.getPastReviews(c);
         assertEquals(1, reviews.size());
-        assertEquals(Duration.ZERO, reviews.get(0).getDuration());
+        assertEquals(Duration.ZERO.toMillis(), reviews.get(0).getDuration());
         assertEquals(ReviewQuality.GOOD, reviews.get(0).getQuality());
         assertNotNull(t.getNextReview()); // should still show up
     }

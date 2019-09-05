@@ -10,8 +10,12 @@
     "@types/node": "12.7.4",
     "@types/react": "16.9.2",
     "@types/react-dom": "16.9.0",
+    "@types/react-relay": "^5.0.0",
+    "babel-plugin-relay": "^5.0.0",
+    "graphql": "^14.5.4",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
+    "react-relay": "^5.0.0",
     "react-scripts": "3.1.1",
     "typescript": "3.6.2"
   },
@@ -35,5 +39,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "relay-compiler": "^5.0.0"
   }
 }
